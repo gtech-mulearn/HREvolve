@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HR Evolve</title>
+    <link rel="icon" href="https://github.com/JUDU-13/webhr/blob/main/logo.png?raw=true" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* CSS Variables for easy color management */
+        :root {
+            --primary-color: #6A0DAD; /* Updated deep purple for stronger contrast */
+            --secondary-color: #FF4500; /* Kept vibrant orange */
+            --accent-color: #FFD700; /* Added bright gold for accents like logo and highlights */
+            --text-color: #FFFFFF; /* Changed text color to white for better readability on gradient */
+            --background-color: #8A2BE2; /* Updated background color for overall page background */
+        }
+        
+        /* Basic styling */
+        body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--background-color);
+        margin: 0;
+        padding: 0;
+        }
+
+        .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        }
+        
+        /* Header styling */
+        header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px; /* Adjust as needed */
+            width: auto;
+            margin-right: auto; /* Align logo to the left */
+        }
+        .burger{
+            display: none;
+        }
+        nav {
+            margin-left: auto; /* Move navigation to the right */
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Navigation menu styling for mobile */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column; /* Stack items vertically */
+                align-items: flex-start; /* Align items to the left */
+            }
+
+            nav ul li {
+                margin-left: 0; /* Reset left margin for vertical stacking */
+                margin-bottom: 10px; /* Add some space between items */
+            }
+        }
+
+        
+          /* Hero section styling */
+        .hero {
+            position: relative; /* Position relative for absolute positioning of slides */
+            height:70vh; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #FF4500;
+            overflow: hidden; /* Hide overflow for slides */
+        }
+
+        .slides {
+            position: absolute; /* Position slides absolutely */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Use flex for sliding */
+            transition: transform 0.5s ease-in-out; /* Smooth transition */
+        }
+
+        .slide {
+            min-width: 100%; /* Each slide takes full width */
+            height: 100%; /* Full height */
+            background-size: cover; /* Cover background image */
+            background-position: center; /* Center background image */
+        }
+
+        .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+        background: #ffffff;
+        background-clip: text; /* Standard property */
+        color: transparent; /* Use gradient color for text */
+        animation: fadeIn 2s ease-in-out forwards;
+        opacity: 1; /* Change opacity to 1 to make the text visible */
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            color: #ffffff;
+            animation: fadeIn 3s ease-in-out forwards;
+            opacity: 1;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0);
+        }
+
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            position: relative; /* Ensure button appears above slides */
+            z-index: 1; /* Bring button above slides */
+        }
+
+        .cta-button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+       /* Keep the previous styles for h2 and p */
+       .content-section h2 {
+        font-size: 2rem;
+        margin-bottom: 0.75rem; /* Reduce space below the heading */
+        color: var(--text-color);
+        }
+
+        .content-section p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem; /* Reduce space between paragraphs and other elements */
+        color: var(--text-color);
+        }
+
+        /* Increased spacing around the section */
+        .content-section {
+        padding: 3rem 0; /* Reduce top and bottom padding for more balanced spacing */
+        }
+
+        /* Gallery styling for a single row */
+        .gallery {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4 columns grid */
+        gap: 0.75rem; /* Reduce the gap between images */
+        justify-items: center;
+        margin-top: 1.5rem; /* Less space above gallery */
+        }
+
+        .gallery img {
+            width: 100%; /* Make sure images take full width */
+            max-width: 250px; /* Limit max size */
+            height: 250px; /* Keep square shape */
+            object-fit: cover; /* Make sure image fits inside square without distortion */
+            border-radius: 10px; /* Slightly rounded corners */
+            position: relative; /* Position for overlay */
+            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out; /* Smooth transition for hover effects */
+        }
+
+        /* Simple hover effect */
+        .gallery img:hover {
+            transform: scale(1.05); /* Grows 5% on hover */
+            filter: brightness(0.5); /* Darkens the image */
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 1024px) {
+        .gallery {
+            grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+        nav{
+            display: none;
+        }
+        .burger{
+            display: block;
+            cursor: pointer;
+        }
+        .gallery {
+            grid-template-columns: 1fr; /* Stack images in 1 column on mobile */
+        }
+
+        .content-section {
+            padding: 2rem 0; /* Reduce padding further for mobile devices */
+        }
+        }
+
+         /* Contact section */
+         #contact {
+            background-color: #f9f9f9;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        #contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .contact-details {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .contact-details .contact-item {
+            flex: 1 1 300px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .contact-details .contact-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .contact-details .contact-item i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .contact-details .contact-item p {
+            color: var(--primary-color);;
+        }
+        .contact-details .contact-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .contact-details .contact-item a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* Social media icons styling */
+        .social-icons {
+            margin-top: 2rem;
+        }
+        
+        .social-icons a {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: var(--secondary-color);
+        }
+        
+        /* Footer styling */
+        footer {
+            background-color: #2c2c2c;
+            color: #fff;
+            padding: 40px 0;
+        }
+
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-column {
+            flex: 1 1 250px;
+            padding: 10px;
+        }
+
+        .footer-column h3 {
+            color: #FF4500;
+            margin-bottom: 15px;
+        }
+
+        .footer-column p, .footer-column a {
+            color: #bfbfbf;
+            text-decoration: none;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .footer-column a:hover {
+            color: #1C84B4; /* Fallback color */
+            background: linear-gradient(to right, #1C84B4, #1E2A38);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-fill-color: transparent;
+        }
+
+
+        .footer-logo {
+            height: 60px;
+            margin-bottom: 20px;
+        }
+
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            border-top: 1px solid #444;
+            padding-top: 20px;
+            color: #bfbfbf;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-container {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: center;
+                align-items: start;
+            }
+        }
+        @media (min-width: 1024px) {
+    .gallery {
+        grid-template-columns: repeat(5 1fr);
+    }
+}
+
+
+/* Mobile Navigation */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100vw;
+    height: 100%;
+    background-color: #333;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: right 0.3s ease;
+    z-index: 1000;
+}
+
+.mobile-nav .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+}
+
+.mobile-nav .close-btn line {
+    stroke-width: 4;
+}
+
+.mobile-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.mobile-nav ul li {
+    margin: 20px 0;
+}
+
+.mobile-nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+.mobile-nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Hide desktop nav on mobile */
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Header section -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <img src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png" alt="HR Evolve Logo" class="logo">
+                <nav>
+                    <ul>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#past-programs">Past Programs</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+                <svg class="burger" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="toggleMenu()">
+                    <rect x="2" y="5" width="20" height="3" fill="white"/>
+                    <rect x="2" y="11" width="20" height="3" fill="white"/>
+                    <rect x="2" y="17" width="20" height="3" fill="white"/>
+                  </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <svg class="close-btn" width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="toggleMenu()">
+            <line x1="4.5" y1="4.5" x2="19.5" y2="19.5" stroke="white" stroke-width="4"/>
+            <line x1="4.5" y1="19.5" x2="19.5" y2="4.5" stroke="white" stroke-width="4"/>
+        </svg>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#past-programs">Past Programs</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero section -->
+    <section class="hero">
+        <div class="slides">
+            <div class="slide active" style="background-image: url('s1.jpg');"></div>
+            <div class="slide" style="background-image: url('s2.jpg');"></div>
+            <div class="slide" style="background-image: url('s3.jpg');"></div>
+            <div class="slide" style="background-image: url('s4.jpg');"></div>
+        </div>
+        <div class="container">
+            <h1>Evolve Your HR Strategy</h1>
+            <p>Connect, Inspire, Transform: HR Leading the Way</p>
+            <a href="https://makemypass.com/elevate-2024" class="cta-button">Register Now</a>
+        </div>
+    </section>
+
+   <!-- About Section -->
+<section id="about" class="content-section about-section">
+    <div class="container">
+        <h2 class="section-title">About HR Evolve</h2>
+        <p class="section-text">
+            Welcome to <strong>HR Evolve</strong>, a vibrant community for HR professionals and enthusiasts dedicated to reshaping the future of human resources. 
+            Our platform encourages collaboration and open dialogue, allowing members to exchange ideas and insights on the latest industry trends. With a focus on innovation and continuous learning, we empower our members to stay ahead in a rapidly changing landscape.
+        </p>
+        <p class="section-text">
+            Every <strong>third Thursday</strong>, we host interactive, expert-led sessions that tackle evolving HR challenges and opportunities. From leadership strategies to emerging technologies, we explore key topics that drive the profession forward. Whether you’re looking to expand your network, develop new skills, or stay informed about industry changes, <strong>HR Evolve</strong> is here to help you grow and succeed.
+        </p>
+    </div>
+</section>
+
+<!-- Upcoming Events Section -->
+<section id="events" class="content-section events-section">
+    <div class="container">
+        <h2 class="section-title">Upcoming Events</h2>
+        <p class="section-text">
+            Set aside time every <strong>third Thursday</strong> of the month for dynamic conversations and networking opportunities with fellow HR professionals. Our events bring fresh insights into key HR issues, offering practical takeaways that you can implement in your work.
+        </p>
+        <p class="section-text">
+            These sessions are designed to build a sense of community while exchanging innovative ideas and best practices that help you stay competitive in today’s HR landscape. Whether you're a seasoned professional or just starting out, you’ll find value in the actionable strategies shared at each event.
+        </p>
+        <p class="section-text">
+            Join us for these enriching sessions, and become a part of a community that thrives on growth, learning, and mutual support.
+        </p>
+    </div>
+</section>
+
+
+    <!-- Past programs section -->
+    <section id="past-programs" class="content-section">
+        <div class="container">
+            <h2>Past Programs</h2>
+            <p>Take a look at some of our previous events and the topics we've covered.</p>
+            <div class="gallery">
+                <!-- Replace these with actual images from past programs -->
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/1.jpg"   alt="Past Program 1">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/2.jpg"   alt="Past Program 2">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/3.jpg"   alt="Past Program 3">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/4.jpg"   alt="Past Program 4">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/5.jpg"   alt="Past Program 5">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/6.jpg"   alt="Past Program 6">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/7.jpg"   alt="Past Program 7">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/8.jpg"   alt="Past Program 8">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/9.jpg"   alt="Past Program 9">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/10.jpg"  alt="Past Program 10">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/11.jpg"  alt="Past Program 11">
+                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/12.jpg"  alt="Past Program 12">
+  
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact section -->
+    <section id="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <div class="contact-details">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <p>Email: <a href="mailto:info@hrevolve.com">info@hrevolve.com</a></p>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <p>Phone: <a href="tel:+919074802552">+91 9074802552</a></p>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p><a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9"> Technopark Trivandrum, Kerala, India</a></p>
+                </div>
+
+            </div>
+            <div class="social-icons">
+                <a href="https://www.linkedin.com/company/hr-evolve-india/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/hr_evolve?igsh=MXg4cXZweWFrc3UwZA=="><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </section>
+
+     <!-- Footer section -->
+     <footer>
+        <div class="footer-container">
+            <!-- Company info and logo -->
+            <div class="footer-column">
+                <img src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png" alt="HR Evolve Logo" class="footer-logo">
+                <p>HR Evolve India is dedicated to helping organizations evolve through strategic HR solutions, talent management, and professional development.</p>
+            </div>
+
+            <!-- Useful Links -->
+            <div class="footer-column">
+                <h3>Useful Links</h3>
+                <p><a href="#about">About Us</a></p>
+                <p><a href="#services">Services</a></p>
+                <p><a href="#events">Events</a></p>
+                <p><a href="#contact">Contact</a></p>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <p>Email: <a href="mailto:info@hrevolve.com">info@hrevolve.com</a></p>
+                <p>Phone: <a href="tel:+919074802552">+91 9074802552</a></p>
+                <p>Address:<a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9"> Technopark Trivandrum, Kerala, India</a></p>
+
+                <!-- Social Media Icons -->
+                <div class="social-icons">
+                    <a href="https://www.linkedin.com/company/hr-evolve-india/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/hr_evolve?igsh=MXg4cXZweWFrc3UwZA=="><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer bottom text -->
+        <div class="footer-bottom">
+            <p>&copy; 2024 HR Evolve India. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentIndex = 0;
+    
+        const mobileNav = document.querySelector('.mobile-nav');
+        let isMenuOpen = false;
+    
+        function showSlide(index) {
+            const offset = -index * 100; // Calculate the offset for sliding effect
+            document.querySelector('.slides').style.transform = `translateX(${offset}%)`;
+        }
+    
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slides.length; // Loop back to first slide
+            showSlide(currentIndex);
+        }
+    
+        // Automatically change slides every 3 seconds for quicker transition
+        setInterval(nextSlide, 3000); // Change time as needed
+    
+        function toggleMenu() {
+            if (isMenuOpen) {
+                gsap.to(mobileNav, { right: '-100%', duration: 0.1 });
+            } else {
+                gsap.to(mobileNav, { right: '0%', duration: 0.1 });
+            }
+            isMenuOpen = !isMenuOpen;
+        }
+    
+        // Close the mobile nav when a link is clicked
+        document.querySelectorAll('.mobile-nav ul li a').forEach(link => {
+            link.addEventListener('click', () => {
+                gsap.to(mobileNav, { right: '-100%', duration: 0.1 });
+                isMenuOpen = false;
+            });
+        });
+    </script>
+
+</body>
+</html>
