@@ -118,7 +118,7 @@
             background-position: center; /* Center background image */
         }
 
-        .hero h1 {
+        .hero h1{
         font-size: 3.5rem;
         margin-bottom: 0.5rem;
         position: relative;
@@ -195,7 +195,24 @@
             position: relative; /* Position for overlay */
             transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out; /* Smooth transition for hover effects */
         }
-
+        #events .container{
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .event-image{
+            height: 65vh;
+            background-image: url('s1.jpg');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-radius: 10px;
+        }
+        
         /* Simple hover effect */
         .gallery img:hover {
             transform: scale(1.05); /* Grows 5% on hover */
@@ -500,9 +517,19 @@
 </section>
 
 <!-- Upcoming Events Section -->
-<section id="events" class="content-section events-section">
+
+<section id="events" class="content-section events-section">>
     <div class="container">
         <h2 class="section-title">Upcoming Events</h2>
+        <div class="event-image">
+            <div class="" style="background-image: url('s1.jpg');"></div>
+            <div style="display: flex;justify-content: center; flex-direction: column; align-items: center; position: absolute; bottom: 100px;">
+                <p style="font-size: 2.5rem; font-weight: 500; text-transform: capitalize;">
+                    join us for our Upcoming Events
+                </p>
+                <a href="https://makemypass.com/elevate-2024" class="cta-button">Register Now</a>
+            </div>
+        </div>
         <p class="section-text">
             Set aside time every <strong>third Thursday</strong> of the month for dynamic conversations and networking opportunities with fellow HR professionals. Our events bring fresh insights into key HR issues, offering practical takeaways that you can implement in your work.
         </p>
@@ -519,6 +546,7 @@
     <!-- Past programs section -->
     <section id="past-programs" class="content-section">
         <div class="container">
+            <div></div>
             <h2>Past Programs</h2>
             <p>Take a look at some of our previous events and the topics we've covered.</p>
             <div class="gallery">
