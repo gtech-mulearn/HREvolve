@@ -245,7 +245,7 @@
   }
   .event-image {
     height: 65vh;
-    background-image: url("s1.jpg");
+    background-image: url("/elevate_new.jpg");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -518,4 +518,13 @@
     }
 
     
+}
+
+/* final update */
+.cta-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
 }

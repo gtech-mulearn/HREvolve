@@ -1,274 +1,439 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>HR Evolve</title>
-    <link rel="icon" href="https://github.com/JUDU-13/webhr/blob/main/logo.png?raw=true" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link
+      rel="icon"
+      href="https://github.com/JUDU-13/webhr/blob/main/logo.png?raw=true"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
     <!-- Font Awesome for social media icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Welcome to HR Evolve</h2>
-            <p>Join us for our upcoming events and be a part of our dynamic network of HR professionals.</p>
-            <a href="https://makemypass.com/elevate-2024" class="cta-button">Register Now</a>
-        </div>
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Welcome to HR Evolve</h2>
+        <p>
+          Join us for our upcoming events and be a part of our dynamic network
+          of HR professionals.
+        </p>
+        <a href="https://makemypass.com/elevate-2024" class="cta-button"
+          >Register Now</a
+        >
+      </div>
     </div>
     <!-- Header section -->
     <header>
-        <div class="container">
-            <div class="header-content">
-                <img src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png" alt="HR Evolve Logo" class="logo">
-                <nav>
-                    <ul>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#events">Events</a></li>
-                        <li><a href="#past-programs">Past Programs</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </nav>
-                <svg class="burger" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="toggleMenu()">
-                    <rect x="2" y="5" width="20" height="3" fill="white"/>
-                    <rect x="2" y="11" width="20" height="3" fill="white"/>
-                    <rect x="2" y="17" width="20" height="3" fill="white"/>
-                  </svg>
-            </div>
+      <div class="container">
+        <div class="header-content">
+          <img
+            src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+            alt="HR Evolve Logo"
+            class="logo"
+          />
+          <nav>
+            <ul>
+              <li><a href="#about">About</a></li>
+              <li><a href="#events">Events</a></li>
+              <li><a href="#past-programs">Past Programs</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </nav>
+          <svg
+            class="burger"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            onclick="toggleMenu()"
+          >
+            <rect x="2" y="5" width="20" height="3" fill="white" />
+            <rect x="2" y="11" width="20" height="3" fill="white" />
+            <rect x="2" y="17" width="20" height="3" fill="white" />
+          </svg>
         </div>
+      </div>
     </header>
 
     <!-- Mobile Navigation -->
     <nav class="mobile-nav">
-        <svg class="close-btn" width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="toggleMenu()">
-            <line x1="4.5" y1="4.5" x2="19.5" y2="19.5" stroke="white" stroke-width="4"/>
-            <line x1="4.5" y1="19.5" x2="19.5" y2="4.5" stroke="white" stroke-width="4"/>
-        </svg>
-        <ul>
-            <li><a href="#about">About</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#past-programs">Past Programs</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+      <svg
+        class="close-btn"
+        width="36"
+        height="36"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        onclick="toggleMenu()"
+      >
+        <line
+          x1="4.5"
+          y1="4.5"
+          x2="19.5"
+          y2="19.5"
+          stroke="white"
+          stroke-width="4"
+        />
+        <line
+          x1="4.5"
+          y1="19.5"
+          x2="19.5"
+          y2="4.5"
+          stroke="white"
+          stroke-width="4"
+        />
+      </svg>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#past-programs">Past Programs</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
     </nav>
 
     <!-- Hero section -->
     <section class="hero">
-        <div class="slides">
-            <div class="slide active" style="background-image: url('s1.jpg');"></div>
-            <div class="slide" style="background-image: url('s2.jpg');"></div>
-            <div class="slide" style="background-image: url('s3.jpg');"></div>
-            <div class="slide" style="background-image: url('s4.jpg');"></div>
-        </div>
-        <div class="container">
-            <h1>Unlock big ideas shaping the future of Business</h1>
-            <p>Connect, Inspire, Transform: HR Leading the Way</p>
-           <p><a href="https://makemypass.com/elevate-2024" class="cta-button">Register for HR Conclave - Elevate 2024</a></p>
-        </div>
+      <div class="slides">
+        <div class="slide active" style="background-image: url('s1.jpg')"></div>
+        <div class="slide" style="background-image: url('s2.jpg')"></div>
+        <div class="slide" style="background-image: url('s3.jpg')"></div>
+        <div class="slide" style="background-image: url('s4.jpg')"></div>
+      </div>
+      <div class="container">
+        <h1>Unlock big ideas shaping the future of Business</h1>
+        <p>Connect, Inspire, Transform: HR Leading the Way</p>
+        <p class="cta-container">
+          <a href="https://makemypass.com/elevate-2024" class="cta-button"
+            >Register for HR Conclave - Elevate 2024</a
+          >
+        </p>
+      </div>
     </section>
 
-   <!-- About Section -->
-<section id="about" class="content-section about-section">
-    <div class="container">
+    <!-- About Section -->
+    <section id="about" class="content-section about-section">
+      <div class="container">
         <h2 class="section-title">About HR Evolve</h2>
         <p class="section-text">
-            Welcome to <strong>HR Evolve</strong>, a vibrant community for HR professionals and enthusiasts dedicated to reshaping the future of human resources. 
-            Our platform encourages collaboration and open dialogue, allowing members to exchange ideas and insights on the latest industry trends. With a focus on innovation and continuous learning, we empower our members to stay ahead in a rapidly changing landscape.
+          Welcome to <strong>HR Evolve</strong>, a vibrant community for HR
+          professionals and enthusiasts dedicated to reshaping the future of
+          human resources. Our platform encourages collaboration and open
+          dialogue, allowing members to exchange ideas and insights on the
+          latest industry trends. With a focus on innovation and continuous
+          learning, we empower our members to stay ahead in a rapidly changing
+          landscape.
         </p>
         <p class="section-text">
-            Every <strong>third Thursday</strong>, we host interactive, expert-led sessions that tackle evolving HR challenges and opportunities. From leadership strategies to emerging technologies, we explore key topics that drive the profession forward. Whether you’re looking to expand your network, develop new skills, or stay informed about industry changes, <strong>HR Evolve</strong> is here to help you grow and succeed.
-            If you want to stay on top of the current HR tech trends and understand what companies in the region are doing for their
-            people, HR EVOLVE is the place to be! . Learn from industry thought leaders that are revolutionizing work places,
-            meet up with C level peers with similar challenges, foster deeper connections, find the right technology partner, forge
-            lifelong partnerships, hear regional case studies, and gain practical takeaways and actionable applications of how HR
-            technology can support better workplaces!
+          Every <strong>third Thursday</strong>, we host interactive, expert-led
+          sessions that tackle evolving HR challenges and opportunities. From
+          leadership strategies to emerging technologies, we explore key topics
+          that drive the profession forward. Whether you’re looking to expand
+          your network, develop new skills, or stay informed about industry
+          changes, <strong>HR Evolve</strong> is here to help you grow and
+          succeed. If you want to stay on top of the current HR tech trends and
+          understand what companies in the region are doing for their people, HR
+          EVOLVE is the place to be! . Learn from industry thought leaders that
+          are revolutionizing work places, meet up with C level peers with
+          similar challenges, foster deeper connections, find the right
+          technology partner, forge lifelong partnerships, hear regional case
+          studies, and gain practical takeaways and actionable applications of
+          how HR technology can support better workplaces!
         </p>
-    </div>
-</section>
+      </div>
+    </section>
 
-<!-- Upcoming Events Section -->
+    <!-- Upcoming Events Section -->
 
-<section id="events" class="content-section events-section">
-    <div class="container">
+    <section id="events" class="content-section events-section">
+      <div class="container">
         <h2 class="section-title">Upcoming Events</h2>
         <div class="event-image">
-            <div class="" style="background-image: url('s1.jpg');"></div>
-            <div style="display: flex;justify-content: center; flex-direction: column; align-items: center; position: absolute; bottom: 100px;">
-                <p style="font-size: 2.5rem; font-weight: 500; text-transform: capitalize;">
-                    Register for HR Conclave - Elevate 2024
-                </p>
-                <a href="https://makemypass.com/elevate-2024" class="cta-button">Register Now</a>
-            </div>
+          <div
+            class=""
+            style="background-image: url('./elevate_new.jpg')"
+          ></div>
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              flex-direction: column;
+              align-items: center;
+              position: absolute;
+              bottom: 100px;
+            "
+          >
+            <a href="https://makemypass.com/elevate-2024" class="cta-button"
+              >Register Now</a
+            >
+          </div>
         </div>
         <p class="section-text">
-            Set aside time every <strong>third Thursday</strong> of the month for dynamic conversations and networking opportunities with fellow HR professionals. Our events bring fresh insights into key HR issues, offering practical takeaways that you can implement in your work.
-            These sessions are designed to build a sense of community while exchanging innovative ideas and best practices that help you stay competitive in today’s HR landscape. Whether you're a seasoned professional or just starting out, you’ll find value in the actionable strategies shared at each event.Join us for these enriching sessions, and become a part of a community that thrives on growth, learning, and mutual support.
+          Set aside time every <strong>third Thursday</strong> of the month for
+          dynamic conversations and networking opportunities with fellow HR
+          professionals. Our events bring fresh insights into key HR issues,
+          offering practical takeaways that you can implement in your work.
+          These sessions are designed to build a sense of community while
+          exchanging innovative ideas and best practices that help you stay
+          competitive in today’s HR landscape. Whether you're a seasoned
+          professional or just starting out, you’ll find value in the actionable
+          strategies shared at each event.Join us for these enriching sessions,
+          and become a part of a community that thrives on growth, learning, and
+          mutual support.
         </p>
-    </div>
-</section>
-
+      </div>
+    </section>
 
     <!-- Past programs section -->
     <section id="past-programs" class="content-section">
-        <div class="container">
-            <div></div>
-            <h2>Past Programs</h2>
-            <p>Take a look at some of our previous events and the topics we've covered.</p>
-            <div class="gallery">
-                <!-- Replace these with actual images from past programs -->
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/1.jpg"   alt="Past Program 1">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/2.jpg"   alt="Past Program 2">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/3.jpg"   alt="Past Program 3">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/4.jpg"   alt="Past Program 4">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/5.jpg"   alt="Past Program 5">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/6.jpg"   alt="Past Program 6">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/7.jpg"   alt="Past Program 7">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/8.jpg"   alt="Past Program 8">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/9.jpg"   alt="Past Program 9">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/10.jpg"  alt="Past Program 10">
-                <img src="https://raw.githubusercontent.com/JUDU-13/webhr/main/11.jpg"  alt="Past Program 11">
-                <img src="https://github.com/gtech-mulearn/HREvolve/blob/main/13.jpg?raw=true" alt="Past Program 13">
-                <img src="https://github.com/gtech-mulearn/HREvolve/blob/main/14.jpg?raw=true" alt="Past Program 14">
-                <img src="https://github.com/gtech-mulearn/HREvolve/blob/main/15.jpg?raw=true" alt="Past Program 15">
-            </div>
-
+      <div class="container">
+        <div></div>
+        <h2>Past Programs</h2>
+        <p>
+          Take a look at some of our previous events and the topics we've
+          covered.
+        </p>
+        <div class="gallery">
+          <!-- Replace these with actual images from past programs -->
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/1.jpg"
+            alt="Past Program 1"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/2.jpg"
+            alt="Past Program 2"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/3.jpg"
+            alt="Past Program 3"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/4.jpg"
+            alt="Past Program 4"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/5.jpg"
+            alt="Past Program 5"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/6.jpg"
+            alt="Past Program 6"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/7.jpg"
+            alt="Past Program 7"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/8.jpg"
+            alt="Past Program 8"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/9.jpg"
+            alt="Past Program 9"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/10.jpg"
+            alt="Past Program 10"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JUDU-13/webhr/main/11.jpg"
+            alt="Past Program 11"
+          />
+          <img
+            src="https://github.com/gtech-mulearn/HREvolve/blob/main/13.jpg?raw=true"
+            alt="Past Program 13"
+          />
+          <img
+            src="https://github.com/gtech-mulearn/HREvolve/blob/main/14.jpg?raw=true"
+            alt="Past Program 14"
+          />
+          <img
+            src="https://github.com/gtech-mulearn/HREvolve/blob/main/15.jpg?raw=true"
+            alt="Past Program 15"
+          />
         </div>
+      </div>
     </section>
-    
+
     <!-- Contact section -->
     <section id="contact">
-        <div class="container">
-            <h2>Contact Us</h2>
-            <div class="contact-details">
-                <div class="contact-item">
-                    <i class="fas fa-envelope"></i>
-                    <p>Email: <a href="mailto:info@hrevolve.com">info@hrevolve.com</a></p>
-                </div>
-                <div class="contact-item">
-                    <i class="fas fa-phone-alt"></i>
-                    <p>Phone: <a href="tel:+919074802552">+91 9074802552</a></p>
-                </div>
-                <div class="contact-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <p><a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9"> Technopark Trivandrum, Kerala, India</a></p>
-                </div>
-
-            </div>
-            <div class="social-icons">
-                <a href="https://www.linkedin.com/company/hr-evolve-india/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="https://www.instagram.com/hr_evolve?igsh=MXg4cXZweWFrc3UwZA=="><i class="fab fa-instagram"></i></a>
-            </div>
+      <div class="container">
+        <h2>Contact Us</h2>
+        <div class="contact-details">
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <p>
+              Email: <a href="mailto:info@hrevolve.com">info@hrevolve.com</a>
+            </p>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-phone-alt"></i>
+            <p>Phone: <a href="tel:+919074802552">+91 9074802552</a></p>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <p>
+              <a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9">
+                Technopark Trivandrum, Kerala, India</a
+              >
+            </p>
+          </div>
         </div>
+        <div class="social-icons">
+          <a
+            href="https://www.linkedin.com/company/hr-evolve-india/"
+            target="_blank"
+            ><i class="fab fa-linkedin"></i
+          ></a>
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a
+            href="https://www.instagram.com/hr_evolve?igsh=MXg4cXZweWFrc3UwZA=="
+            ><i class="fab fa-instagram"></i
+          ></a>
+        </div>
+      </div>
     </section>
 
-     <!-- Footer section -->
-     <footer>
-        <div class="footer-container">
-            <!-- Company info and logo -->
-            <div class="footer-column">
-                <img src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png" alt="HR Evolve Logo" class="footer-logo">
-                <p>It is a non-profit and self-funded event for HR professionals to keep abreast with the trends, best practices and to
-                strengthen their network.</p>
-            </div>
-
-            <!-- Useful Links -->
-            <div class="footer-column">
-                <h3>Useful Links</h3>
-                <p><a href="#about">About Us</a></p>
-                <p><a href="#services">Services</a></p>
-                <p><a href="#events">Events</a></p>
-                <p><a href="#contact">Contact</a></p>
-            </div>
-
-            <!-- Contact Info -->
-            <div class="footer-column">
-                <h3>Contact Us</h3>
-                <p>Email: <a href="mailto:info@hrevolve.com">info@hrevolve.com</a></p>
-                <p>Phone: <a href="tel:+919074802552">+91 9074802552</a></p>
-                <p>Address:<a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9"> Technopark Trivandrum, Kerala, India</a></p>
-
-                <!-- Social Media Icons -->
-                <div class="social-icons">
-                    <a href="https://www.linkedin.com/company/hr-evolve-india/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.instagram.com/hr_evolve?igsh=MXg4cXZweWFrc3UwZA=="><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
+    <!-- Footer section -->
+    <footer>
+      <div class="footer-container">
+        <!-- Company info and logo -->
+        <div class="footer-column">
+          <img
+            src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+            alt="HR Evolve Logo"
+            class="footer-logo"
+          />
+          <p>
+            It is a non-profit and self-funded event for HR professionals to
+            keep abreast with the trends, best practices and to strengthen their
+            network.
+          </p>
         </div>
 
-        <!-- Footer bottom text -->
-        <div class="footer-bottom">
-            <p>&copy; 2024 HR Evolve India. All rights reserved.</p>
+        <!-- Useful Links -->
+        <div class="footer-column">
+          <h3>Useful Links</h3>
+          <p><a href="#about">About Us</a></p>
+          <p><a href="#services">Services</a></p>
+          <p><a href="#events">Events</a></p>
+          <p><a href="#contact">Contact</a></p>
         </div>
+
+        <!-- Contact Info -->
+        <div class="footer-column">
+          <h3>Contact Us</h3>
+          <p>Email: <a href="mailto:info@hrevolve.com">info@hrevolve.com</a></p>
+          <p>Phone: <a href="tel:+919074802552">+91 9074802552</a></p>
+          <p>
+            Address:<a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9">
+              Technopark Trivandrum, Kerala, India</a
+            >
+          </p>
+
+          <!-- Social Media Icons -->
+          <div class="social-icons">
+            <a
+              href="https://www.linkedin.com/company/hr-evolve-india/"
+              target="_blank"
+              ><i class="fab fa-linkedin"></i
+            ></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a
+              href="https://www.instagram.com/hr_evolve?igsh=MXg4cXZweWFrc3UwZA=="
+              ><i class="fab fa-instagram"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer bottom text -->
+      <div class="footer-bottom">
+        <p>&copy; 2024 HR Evolve India. All rights reserved.</p>
+      </div>
     </footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+      integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <script>
-        // Show the modal when the page loads
-        window.onload = function() {
-            setTimeout(() => {
-                document.getElementById('registerModal').style.display = 'block';
-            }, 3000);
-        };
+      // Show the modal when the page loads
+      window.onload = function () {
+        setTimeout(() => {
+          document.getElementById("registerModal").style.display = "block";
+        }, 3000);
+      };
 
-        // Get the modal
-        var modal = document.getElementById('registerModal');
+      // Get the modal
+      var modal = document.getElementById("registerModal");
 
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName('close-btn')[0];
+      // Get the <span> element that closes the modal
+      var span = document.getElementsByClassName("close-btn")[0];
 
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-            modal.style.display = 'none';
-        };
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
 
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        };
-        const slides = document.querySelectorAll('.slide');
-        let currentIndex = 0;
-    
-        const mobileNav = document.querySelector('.mobile-nav');
-        let isMenuOpen = false;
-    
-        function showSlide(index) {
-            const offset = -index * 100; // Calculate the offset for sliding effect
-            document.querySelector('.slides').style.transform = `translateX(${offset}%)`;
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
         }
-    
-        function nextSlide() {
-            currentIndex = (currentIndex + 1) % slides.length; // Loop back to first slide
-            showSlide(currentIndex);
+      };
+      const slides = document.querySelectorAll(".slide");
+      let currentIndex = 0;
+
+      const mobileNav = document.querySelector(".mobile-nav");
+      let isMenuOpen = false;
+
+      function showSlide(index) {
+        const offset = -index * 100; // Calculate the offset for sliding effect
+        document.querySelector(
+          ".slides"
+        ).style.transform = `translateX(${offset}%)`;
+      }
+
+      function nextSlide() {
+        currentIndex = (currentIndex + 1) % slides.length; // Loop back to first slide
+        showSlide(currentIndex);
+      }
+
+      // Automatically change slides every 3 seconds for quicker transition
+      setInterval(nextSlide, 3000); // Change time as needed
+
+      function toggleMenu() {
+        if (isMenuOpen) {
+          gsap.to(mobileNav, { right: "-100%", duration: 0.1 });
+        } else {
+          gsap.to(mobileNav, { right: "0%", duration: 0.1 });
         }
-    
-        // Automatically change slides every 3 seconds for quicker transition
-        setInterval(nextSlide, 3000); // Change time as needed
-    
-        function toggleMenu() {
-            if (isMenuOpen) {
-                gsap.to(mobileNav, { right: '-100%', duration: 0.1 });
-            } else {
-                gsap.to(mobileNav, { right: '0%', duration: 0.1 });
-            }
-            isMenuOpen = !isMenuOpen;
-        }
-    
-        // Close the mobile nav when a link is clicked
-        document.querySelectorAll('.mobile-nav ul li a').forEach(link => {
-            link.addEventListener('click', () => {
-                gsap.to(mobileNav, { right: '-100%', duration: 0.1 });
-                isMenuOpen = false;
-            });
+        isMenuOpen = !isMenuOpen;
+      }
+
+      // Close the mobile nav when a link is clicked
+      document.querySelectorAll(".mobile-nav ul li a").forEach((link) => {
+        link.addEventListener("click", () => {
+          gsap.to(mobileNav, { right: "-100%", duration: 0.1 });
+          isMenuOpen = false;
         });
+      });
     </script>
-
-</body>
+  </body>
 </html>
