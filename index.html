@@ -19,6 +19,39 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background: linear-gradient(
+          to right,
+          rgba(106, 13, 173, 0.3),
+          rgba(255, 69, 0, 0.3)
+        ); /* 30% opacity gradient from primary to secondary */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.04);
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .hero, .content-section, #contact, footer {
+        margin-top: 90px; /* Adjust if your header is taller/shorter */
+      }
+      @media (max-width: 768px) {
+        .hero, .content-section, #contact, footer {
+          margin-top: 120px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="registerModal" class="modal">
@@ -38,24 +71,18 @@
     <header>
       <div class="container">
         <div class="header-content">
-          <img
-            src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
-            alt="HR Evolve Logo"
-            class="logo"
-          />
+          <a href="#" style="display:inline-block; cursor:pointer;">
+            <img
+              src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+              alt="HR Evolve Logo"
+              class="logo"
+            />
+          </a>
           <nav>
             <ul>
               <li><a href="#about">About</a></li>
-              <li><a href="#events">Events</a></li>
               <li><a href="#past-programs">Past Programs</a></li>
               <li><a href="#contact">Contact</a></li>
-              <li style="background-color: white; border-radius: 0.2rem">
-                <a
-                  style="color: black; padding: 1.5rem 1rem"
-                  href="https://elevate24.hrevolve.org/"
-                  >Elevate</a
-                >
-              </li>
             </ul>
           </nav>
           <svg
@@ -105,16 +132,8 @@
       </svg>
       <ul>
         <li><a href="#about">About</a></li>
-        <li><a href="#events">Events</a></li>
         <li><a href="#past-programs">Past Programs</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li style="background-color: white; border-radius: 0.2rem">
-          <a
-            style="color: black; padding: 1.5rem 1rem"
-            href="https://elevate24.hrevolve.org/"
-            >Elevate</a
-          >
-        </li>
       </ul>
     </nav>
 
@@ -163,42 +182,6 @@
           technology partner, forge lifelong partnerships, hear regional case
           studies, and gain practical takeaways and actionable applications of
           how HR technology can support better workplaces!
-        </p>
-      </div>
-    </section>
-
-    <!-- Upcoming Events Section -->
-
-    <section id="events" class="content-section events-section">
-      <div class="container">
-        <h2 class="section-title">Upcoming Events</h2>
-        <div id="clickable-div" class="event-image">
-          <div class="" style="background-image: url('s1.jpg')"></div>
-          <div
-            style="
-              display: flex;
-              justify-content: center;
-              flex-direction: column;
-              align-items: center;
-              position: absolute;
-              bottom: 100px;
-            "
-          >
-            <a href="#" class="cta-button">Registration Closed</a>
-          </div>
-        </div>
-        <p class="section-text">
-          Set aside time every <strong>third Thursday</strong> of the month for
-          dynamic conversations and networking opportunities with fellow HR
-          professionals. Our events bring fresh insights into key HR issues,
-          offering practical takeaways that you can implement in your work.
-          These sessions are designed to build a sense of community while
-          exchanging innovative ideas and best practices that help you stay
-          competitive in today’s HR landscape. Whether you're a seasoned
-          professional or just starting out, you’ll find value in the actionable
-          strategies shared at each event.Join us for these enriching sessions,
-          and become a part of a community that thrives on growth, learning, and
-          mutual support.
         </p>
       </div>
     </section>
@@ -270,9 +253,68 @@
             src="https://github.com/gtech-mulearn/HREvolve/blob/main/15.jpg?raw=true"
             alt="Past Program 15"
           />
+          <img
+            src="HR1.jpg"
+            alt="Past Program 16"
+          />
+          <img
+            src="HR2.jpg"
+            alt="Past Program 17"
+          />
+          <img
+            src="HR3.jpg"
+            alt="Past Program 18"
+          />
+          <img
+            src="HR4.jpg"
+            alt="Past Program 19"
+          />
+          <img
+            src="HR5.jpg"
+            alt="Past Program 20"
+          />
+          <img
+            src="HR6.jpg"
+            alt="Past Program 21"/>
+          <img
+            src="HR7.jpg"
+            alt="Past Program 22">
+          <img
+            src="HR8.jpg"
+            alt="Past Program 23">
+          <img
+            src="HR9.jpg"
+            alt="Past Program 24">
+            <img
+            src="HR10.jpg"
+            alt="Past Program 25"
+          />
+          <img
+            src="HR11.jpg"
+            alt="Past Program 26">
+          <img
+            src="HR12.jpg"
+            alt="Past Program 27">
+          <img
+            src="HR13.jpg"
+            alt="Past Program 28">
+          <img
+            src="HR14.jpg"
+            alt="Past Program 29">
+          <img
+            src="HR15.jpg"
+            alt="Past Program 30">
         </div>
       </div>
     </section>
+
+        <!-- Membership Box -->
+    <div style="max-width: 600px; margin: 40px auto; padding: 2rem 1.5rem; border-radius: 1rem; background: linear-gradient(90deg, #6a0dad 0%, #ff4500 100%); color: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center;">
+      <h2 style="margin-top: 0; font-size: 2rem; font-weight: 700; letter-spacing: 1px;">Be a Member!</h2>
+      <p style="font-size: 1.1rem; margin-bottom: 2rem;">Be a member of HR Evolve. If you would like to be a member of HR Evolve</p>
+      <a href="https://airtable.com/appIRRJL3aA3CnHdL/shrOj9Zt3G4sx6wpO" style="display: inline-block; padding: 0.75rem 2rem; background: #fff; color: #6a0dad; border-radius: 2rem; font-weight: 700; text-decoration: none; font-size: 1.1rem; transition: background 0.2s, color 0.2s;">Click Here</a>
+    </div>
+
 
     <!-- Contact section -->
     <section id="contact">
@@ -344,7 +386,8 @@
         <div class="footer-column">
           <h3>Contact Us</h3>
           <p>Email: <a href="mailto:info@hrevolve.com">info@hrevolve.com</a></p>
-          <p>Phone: <a href="tel:+919074802552">+91 9074802552</a></p>
+          <p>Phone: <a href="tel:+91 6235355926 / +91 99468 79255">+91 6235355926 / +91 99468 79255
+</a></p>
           <p>
             Address:<a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9">
               Technopark Trivandrum, Kerala, India</a
