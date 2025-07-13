@@ -44,12 +44,78 @@
         padding: 0;
       }
       .hero, .content-section, #contact, footer {
-        margin-top: 90px; /* Adjust if your header is taller/shorter */
+        margin-top: 60px; /* Reduced space between sections */
       }
       @media (max-width: 768px) {
         .hero, .content-section, #contact, footer {
-          margin-top: 120px;
+          margin-top: 80px; /* Reduced space for mobile */
         }
+      }
+      #upcoming .container {
+        text-align: center;
+      }
+      .upcoming-row {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin: 1rem 0; /* Reduced vertical margin */
+      }
+      .upcoming-img {
+        width: 320px;
+        max-width: 100%;
+        height: auto;
+        border-radius: 1rem;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        background: #fff;
+        object-fit: cover;
+      }
+      @media (max-width: 900px) {
+        .upcoming-row {
+          gap: 12px;
+        }
+        .upcoming-img {
+          width: 220px;
+        }
+      }
+      @media (max-width: 600px) {
+        .upcoming-row {
+          flex-direction: column;
+          gap: 16px;
+        }
+        .upcoming-img {
+          width: 100%;
+          max-width: 100%;
+          border-radius: 0.5rem;
+        }
+      }
+      @media (max-width: 400px) {
+        .upcoming-img {
+          border-radius: 0.3rem;
+        }
+      }
+      .membership-box {
+        max-width: 600px;
+        margin: 24px auto; /* Reduced margin above/below */
+        padding: 1.5rem 1rem; /* Slightly reduced padding */
+        border-radius: 1rem;
+        background: linear-gradient(90deg, #6a0dad 0%, #ff4500 100%);
+        color: #fff;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        text-align: center;
+      }
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-top: 1rem; /* Reduced margin above gallery */
+      }
+      footer {
+        background: #1a0033;
+        color: #fff;
+        padding: 24px 0 0 0; /* Reduced top padding */
+        margin-top: 40px; /* Reduced margin above footer */
       }
     </style>
   </head>
@@ -190,11 +256,23 @@
     <section id="upcoming" class="content-section">
       <div class="container" style="text-align:center;">
         <h2>Upcoming Session</h2>
-        <img 
-          src="Upcoming.jpg" 
-          alt="Upcoming HR Evolve Session" 
-          style="width: 750px;height:auto;border-radius:1rem;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin:2rem 0;"
-        />
+        <div class="upcoming-row">
+          <img 
+            src="Upcoming.jpg" 
+            alt="Upcoming HR Evolve Session"
+            class="upcoming-img"
+          />
+          <img 
+            src="HR16.jpg"
+            alt="Upcoming HR Event 2"
+            class="upcoming-img"
+          />
+          <img 
+            src="HR17.jpg"
+            alt="Upcoming HR Event 3"
+            class="upcoming-img"
+          />
+        </div>
       </div>
     </section>
 
@@ -321,7 +399,7 @@
     </section>
 
         <!-- Membership Box -->
-    <div style="max-width: 600px; margin: 40px auto; padding: 2rem 1.5rem; border-radius: 1rem; background: linear-gradient(90deg, #6a0dad 0%, #ff4500 100%); color: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center;">
+    <div style="max-width: 600px; margin: 24px auto; padding: 1.5rem 1rem; border-radius: 1rem; background: linear-gradient(90deg, #6a0dad 0%, #ff4500 100%); color: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center;">
       <h2 style="margin-top: 0; font-size: 2rem; font-weight: 700; letter-spacing: 1px;">Be a Member!</h2>
       <p style="font-size: 1.1rem; margin-bottom: 2rem;">Be a member of HR Evolve. If you would like to be a member of HR Evolve</p>
       <a href="https://airtable.com/appIRRJL3aA3CnHdL/shrOj9Zt3G4sx6wpO" style="display: inline-block; padding: 0.75rem 2rem; background: #fff; color: #6a0dad; border-radius: 2rem; font-weight: 700; text-decoration: none; font-size: 1.1rem; transition: background 0.2s, color 0.2s;">Click Here</a>
