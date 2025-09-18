@@ -44,6 +44,17 @@
     color: var(--text-secondary);
   }
   
+  /* Override default link colors - ensure no blue */
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  
+  /* Specific override for contact links */
+  a[href^="mailto:"], a[href^="tel:"], a[href^="https://maps"] {
+    color: inherit !important;
+  }
+  
   @media (max-width: 768px) {
     h1 { font-size: 2.5rem; }
     h2 { font-size: 1.875rem; }
@@ -79,9 +90,9 @@
   --border-color: #dee2e6;
   --border-custom: #dee2e6;
   --shadow-color: rgba(0, 0, 0, 0.1);
-  --accent-color: #007bff;
-  --accent-hover: #0056b3;
-  --accent: #007bff;
+  --accent-color: #000000;
+  --accent-hover: #374151;
+  --accent: #000000;
 }
 
 /* Dark theme */
@@ -95,9 +106,9 @@
   --border-color: #404040;
   --border-custom: #404040;
   --shadow-color: rgba(255, 255, 255, 0.1);
-  --accent-color: #4a90e2;
-  --accent-hover: #357abd;
-  --accent: #4a90e2;
+  --accent-color: #ffffff;
+  --accent-hover: #d1d5db;
+  --accent: #ffffff;
 }
 
 /* Professional component styles */
@@ -179,7 +190,7 @@
   }
   
   .nav-link:hover {
-    color: var(--accent);
+    color: var(--text-secondary) !important;
   }
   
   /* Default state (transparent header) - bright white text and no border - ONLY on main page with hero */
@@ -193,7 +204,7 @@
   }
   
   .main-page header:not(.header-scrolled) .nav-link:hover {
-    color: #60a5fa !important;
+    color: #d1d5db !important;
   }
   
   /* Preserve original colors for images and logos */

@@ -327,23 +327,23 @@ export default function Home() {
               <i className="fas fa-envelope text-2xl sm:text-3xl text-primary"></i>
               <div className="text-center">
                 <p className="text-base sm:text-lg text-primary mb-1">Email:</p>
-                <a href="mailto:info@hrevolve.org" className="text-blue-600 hover:text-blue-800 transition-colors duration-300 text-sm sm:text-base break-all">info@hrevolve.org</a>
+                <a href="mailto:info@hrevolve.org" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base break-all no-underline">info@hrevolve.org</a>
               </div>
             </div>
             <div className="flex flex-col items-center gap-3 sm:gap-4 p-4">
               <i className="fas fa-phone-alt text-2xl sm:text-3xl text-primary"></i>
               <div className="text-center">
                 <p className="text-base sm:text-lg text-primary mb-1">Phone:</p>
-                <a href="tel:+91 623535592" className="text-blue-600 hover:text-blue-800 transition-colors duration-300 text-sm sm:text-base">+91 623535592</a>
+                <a href="tel:+91 623535592" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base no-underline">+91 623535592</a>
                 <br />
-                <a href="tel:+91 99468 79255" className="text-blue-600 hover:text-blue-800 transition-colors duration-300 text-sm sm:text-base">+91 99468 79255</a>
+                <a href="tel:+91 99468 79255" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base no-underline">+91 99468 79255</a>
               </div>
             </div>
             <div className="flex flex-col items-center gap-3 sm:gap-4 p-4">
               <i className="fas fa-map-marker-alt text-2xl sm:text-3xl text-primary"></i>
               <div className="text-center">
                 <p className="text-base sm:text-lg text-primary mb-1">Address:</p>
-                <a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9" className="text-blue-600 hover:text-blue-800 transition-colors duration-300 text-sm sm:text-base">
+                <a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base no-underline">
                   Technopark Trivandrum, Kerala, India</a>
               </div>
             </div>
@@ -405,13 +405,13 @@ export default function Home() {
             <h3 className="text-base sm:text-lg font-bold mb-4 text-primary">Get in Touch</h3>
             <div className="space-y-2 text-sm">
               <p className="text-secondary break-all">
-                Email: <a href="mailto:info@hrevolve.org" className="text-blue-600 hover:text-blue-800 transition-colors duration-300">info@hrevolve.org</a>
+                Email: <a href="mailto:info@hrevolve.org" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 no-underline">info@hrevolve.org</a>
               </p>
               <p className="text-secondary">
-                Phone: <a href="tel:+91 6235355926" className="text-blue-600 hover:text-blue-800 transition-colors duration-300">+91 6235355926</a> / <a href="tel:+91 99468 79255" className="text-blue-600 hover:text-blue-800 transition-colors duration-300">+91 99468 79255</a>
+                Phone: <a href="tel:+91 6235355926" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 no-underline">+91 6235355926</a> / <a href="tel:+91 99468 79255" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 no-underline">+91 99468 79255</a>
               </p>
               <p className="text-secondary mb-4">
-                Address: <a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9" className="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                Address: <a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 no-underline">
                   Technopark Trivandrum, Kerala, India</a>
               </p>
 

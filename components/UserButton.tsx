@@ -15,7 +15,7 @@ export default function UserButton() {
     return (
       <button
         onClick={() => signIn()}
-        className="nav-link p-2 rounded-full transition-all duration-300 ease-out hover:bg-black/10 dark:hover:bg-white/10 text-sm font-medium"
+        className="nav-link p-2 transition-all duration-300 ease-out hover:scale-110 text-sm font-medium"
       >
         Sign In
       </button>
