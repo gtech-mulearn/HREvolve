@@ -4,8 +4,7 @@ import { sendWelcomeEmail } from '../../../../lib/email-service'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const token = searchParams.get('token')
+    const token = request.nextUrl.searchParams.get('token')
 
     if (!token) {
       return NextResponse.json(
