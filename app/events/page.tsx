@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import ThemeToggle from '../theme-toggle'
+import { useTheme } from '../theme-provider'
 import { fetchProgramsFromSheet, ProgramData, formatDate, isEventSoon } from '../utils/sheetsApi'
 
 interface ProgramCardProps {
@@ -13,25 +14,8 @@ interface ProgramCardProps {
 
 function ProgramCard({ program, isPast = false }: ProgramCardProps) {
   const isComingSoon = !isPast && isEventSoon(program.date);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    // Check initial theme
-    const checkTheme = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    };
-    
-    checkTheme();
-    
-    // Watch for theme changes
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-    
-    return () => observer.disconnect();
-  }, []);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <div className="rounded-xl shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)', borderWidth: '1px' }}>

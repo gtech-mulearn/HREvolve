@@ -28,17 +28,22 @@ declare module 'next-auth' {
       email?: string | null
       image?: string | null
       role?: string
+      userType?: 'MEMBER' | 'PARTNER'
+      profileCompleted?: boolean
     }
   }
 
   interface User {
     role?: string
+    userType?: 'MEMBER' | 'PARTNER'
+    profileCompleted?: boolean
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
     role?: string
+    userType?: 'MEMBER' | 'PARTNER'
   }
 }
 

@@ -17,7 +17,7 @@ export default function UserButton() {
         onClick={() => signIn()}
         className="nav-link p-2 transition-all duration-300 ease-out hover:scale-110 text-sm font-medium"
       >
-        Sign In
+        Be a Member
       </button>
     )
   }

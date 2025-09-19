@@ -68,19 +68,54 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role
+        token.userType = user.userType
       }
       return token
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user.id = token.sub!
         session.user.role = token.role
+        session.user.userType = token.userType
+        
+        // Fetch additional user data including profileCompleted and userType
+        if (session.user.email) {
+          try {
+            const user = await prisma.user.findUnique({
+              where: { email: session.user.email },
+              select: { 
+                profileCompleted: true,
+                userType: true
+              }
+            })
+            session.user.profileCompleted = user?.profileCompleted || false
+            session.user.userType = user?.userType || 'MEMBER'
+          } catch (error) {
+            console.error('Failed to fetch user profile status:', error)
+            session.user.profileCompleted = false
+            session.user.userType = 'MEMBER'
+          }
+        }
       }
       return session
+    },
+    async signIn({ user, account, profile }) {
+      return true
+    },
+    async redirect({ url, baseUrl }) {
+      // For sign-in redirects, go to home page and let client-side routing handle it
+      if (url === baseUrl || url === '/') {
+        return '/'
+      }
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     }
   },
   pages: {
     signIn: '/auth/signin',
-    newUser: '/auth/welcome',
+    newUser: '/member/complete-profile',
   }
 }

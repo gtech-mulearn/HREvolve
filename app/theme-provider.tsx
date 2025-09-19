@@ -12,22 +12,36 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light')
+  const [theme, setTheme] = useState<Theme>(() => {
+    // Initialize with saved theme or default to light
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as Theme
+      if (savedTheme) {
+        return savedTheme
+      }
+    }
+    return 'light'
+  })
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Check for saved theme in localStorage or default to 'light'
+    setMounted(true)
+    
+    // Check for saved theme in localStorage on mount
     const savedTheme = localStorage.getItem('theme') as Theme
-    if (savedTheme) {
+    if (savedTheme && savedTheme !== theme) {
       setTheme(savedTheme)
     }
   }, [])
 
   useEffect(() => {
-    // Update document class, data-theme attribute, and save to localStorage
-    document.documentElement.className = theme
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
+    if (mounted) {
+      // Update document class, data-theme attribute, and save to localStorage
+      document.documentElement.className = theme
+      document.documentElement.setAttribute('data-theme', theme)
+      localStorage.setItem('theme', theme)
+    }
+  }, [theme, mounted])
 
   const toggleTheme = () => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light')
