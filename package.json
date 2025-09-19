@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "prisma generate",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "prisma generate",
     "setup-auth": "node setup-auth.js",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",

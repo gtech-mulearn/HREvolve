@@ -68,22 +68,25 @@ export async function POST(request: NextRequest) {
         profileCompleted: true
       }) // Debug log
 
+      // Update user profile
+      const updateData: any = {
+        name,
+        phone,
+        organization,
+        designation,
+        experience,
+        linkedinUrl: linkedinUrl || null,
+        expertise: expertise || null,
+        interests: interests || null,
+        profileCompleted: true,
+        updatedAt: new Date()
+      }
+
       const updatedUser = await prisma.user.update({
         where: {
           email: session.user.email
         },
-        data: {
-          name,
-          phone,
-          organization,
-          designation,
-          experience,
-          linkedinUrl: linkedinUrl || null,
-          expertise: expertise || null,
-          interests: interests || null,
-          profileCompleted: true,
-          updatedAt: new Date()
-        },
+        data: updateData,
         select: {
           id: true,
           name: true,
@@ -96,6 +99,7 @@ export async function POST(request: NextRequest) {
           expertise: true,
           interests: true,
           profileCompleted: true,
+          userType: true,
           createdAt: true,
           updatedAt: true
         }
