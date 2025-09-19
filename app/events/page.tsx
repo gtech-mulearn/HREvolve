@@ -33,10 +33,6 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
     return () => observer.disconnect();
   }, []);
 
-  const buttonStyle = isDark 
-    ? { backgroundColor: '#ffffff', color: '#000000' }
-    : { backgroundColor: '#000000', color: '#ffffff' };
-
   return (
     <div className="rounded-xl shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)', borderWidth: '1px' }}>
       {/* Event Image */}
@@ -106,9 +102,18 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 text-center py-2 px-4 rounded-lg font-bold transition-all duration-200"
-              style={buttonStyle}
+              style={{
+                backgroundColor: isDark ? '#ffffff' : '#000000',
+                color: isDark ? '#000000' : '#ffffff',
+                border: 'none',
+                textDecoration: 'none',
+                WebkitTextFillColor: isDark ? '#000000' : '#ffffff',
+                display: 'block'
+              }}
             >
-              Register Now
+              <span style={{ color: isDark ? '#000000' : '#ffffff' }}>
+                Register Now
+              </span>
             </a>
           )}
         </div>
