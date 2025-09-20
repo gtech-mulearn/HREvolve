@@ -2,6 +2,7 @@
 
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { useState } from 'react'
+import { getAvatarColor, getUserInitials } from '../lib/avatar-utils'
 
 export default function UserButton() {
   const { data: session, status } = useSession()
@@ -35,8 +36,11 @@ export default function UserButton() {
             className="w-8 h-8 rounded-full"
           />
         ) : (
-          <div className="w-8 h-8 bg-white/20 backdrop-blur-sm text-white rounded-full flex items-center justify-center text-sm font-medium">
-            {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+          <div 
+            className="w-8 h-8 text-white rounded-full flex items-center justify-center text-sm font-medium shadow-lg"
+            style={{ backgroundColor: getAvatarColor(session.user?.name, session.user?.email) }}
+          >
+            {getUserInitials(session.user?.name, session.user?.email)}
           </div>
         )}
         <span className="nav-link hidden sm:block text-sm font-medium">
