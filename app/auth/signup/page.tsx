@@ -10,9 +10,7 @@ export default function SignUp() {
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    department: '',
-    position: ''
+    confirmPassword: ''
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -51,9 +49,7 @@ export default function SignUp() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          password: formData.password,
-          department: formData.department,
-          position: formData.position
+          password: formData.password
         }),
       })
 
