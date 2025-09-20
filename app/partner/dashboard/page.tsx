@@ -157,28 +157,35 @@ export default function PartnerDashboard() {
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-3 sm:py-4">
-            <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
-              <Image
-                src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
-                alt="HR Evolve Logo"
-                width={40}
-                height={40}
-                className="keep-colors sm:w-[45px] sm:h-[45px]"
-              />
-              <span className="font-bold text-lg sm:text-xl" style={{ color: 'var(--text-primary)' }}>
-                HR Evolve
-              </span>
-            </Link>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <ThemeToggle />
-              <UserButton />
+        <header className="sticky top-0 z-50 border-b transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-3 sm:py-4">
+              <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
+                <Image
+                  src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+                  alt="HR Evolve Logo"
+                  width={40}
+                  height={40}
+                  className="keep-colors sm:w-[45px] sm:h-[45px]"
+                />
+                <span className="font-bold text-lg sm:text-xl" style={{ color: 'var(--text-primary)' }}>
+                  HR Evolve
+                </span>
+              </Link>
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="hidden sm:flex items-center space-x-2 text-sm px-3 sm:px-4 py-2 rounded-full border" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-custom)', backgroundColor: 'var(--bg-secondary)' }}>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span>Partner: {session.user?.name}</span>
+                </div>
+                <div className="sm:hidden flex items-center space-x-2 text-xs px-2 py-1 rounded-full border" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-custom)', backgroundColor: 'var(--bg-secondary)' }}>
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span>{session.user?.name?.split(' ')[0]}</span>
+                </div>
+                <ThemeToggle />
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
       <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
         {/* Welcome Section */}

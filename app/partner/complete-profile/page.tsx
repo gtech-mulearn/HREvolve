@@ -38,21 +38,33 @@ export default function CompletePartnerProfilePage() {
   })
   
   const [isLoading, setIsLoading] = useState(false)
+  const [isDataLoading, setIsDataLoading] = useState(true) // New loading state for data fetching
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
   // Fetch existing partner profile data when component mounts and session is available
   useEffect(() => {
     const fetchPartnerData = async () => {
-      if (!session?.user?.email) return
-
-      // If user is a member, redirect to member profile
-      if (session.user?.userType === 'MEMBER') {
-        router.push('/member/complete-profile')
+      if (!session?.user?.email) {
+        setIsDataLoading(false)
         return
       }
 
       try {
+        // First, ensure the user is set as a PARTNER when accessing this page
+        const setUserTypeResponse = await fetch('/api/user/set-usertype', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userType: 'PARTNER' }),
+        })
+
+        if (setUserTypeResponse.ok) {
+          // Update session after setting userType
+          await getSession()
+        }
+
         const response = await fetch('/api/partner/complete-profile', {
           method: 'GET',
           headers: {
@@ -93,11 +105,15 @@ export default function CompletePartnerProfilePage() {
       } catch (error) {
         console.error('Failed to fetch partner data:', error)
         // Don't show error to user, just use defaults
+      } finally {
+        setIsDataLoading(false) // Stop loading after fetch completes
       }
     }
 
     if (session?.user?.email) {
       fetchPartnerData()
+    } else {
+      setIsDataLoading(false)
     }
   }, [session?.user?.email, router, isUpdate])
 
@@ -113,6 +129,24 @@ export default function CompletePartnerProfilePage() {
   if (!session) {
     router.push('/auth/signin')
     return null
+  }
+
+  // Show loading while fetching profile data
+  if (isDataLoading) {
+    return (
+      <div className="min-h-screen transition-colors duration-300 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6 shadow-lg" style={{ backgroundColor: isDark ? '#ffffff' : '#000000' }}>
+            <svg className="w-10 h-10 animate-spin" style={{ color: isDark ? '#000000' : '#ffffff' }} fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Loading Your Profile</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>Please wait while we fetch your information...</p>
+        </div>
+      </div>
+    )
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
