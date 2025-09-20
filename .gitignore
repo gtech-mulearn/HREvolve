@@ -35,3 +35,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /app/generated/prisma
+
+# backup files (contain sensitive data)
+/backup/
+*.backup
+/scripts/export-data.js
+/scripts/import-data.js
+/scripts/verify-migration.js
+MIGRATION-GUIDE.md
+.env.new-template
