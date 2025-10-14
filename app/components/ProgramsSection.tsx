@@ -3,29 +3,92 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useTheme } from '../theme-provider';
-import { fetchProgramsFromSheet, ProgramData, formatDate, isEventSoon } from '../utils/sheetsApi';
+import { fetchProgramsFromSheet, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls } from '../utils/sheetsApi';
 
 interface ProgramCardProps {
   program: ProgramData;
   isPast?: boolean;
 }
 
+interface PastEventImageProps {
+  program: ProgramData;
+  className?: string;
+  width: number;
+  height: number;
+}
+
+function PastEventImage({ program, className, width, height }: PastEventImageProps) {
+  // Get multiple URL formats for Google Drive images
+  const imageUrls = program.image_url ? getGoogleDriveUrls(program.image_url) : [getFallbackImageUrl()];
+  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
+  const [imageSrc, setImageSrc] = useState(imageUrls[0]);
+
+  const handleImageError = () => {
+    const nextIndex = currentUrlIndex + 1;
+    if (nextIndex < imageUrls.length) {
+      console.log(`Past event image failed, trying fallback ${nextIndex}:`, imageUrls[nextIndex]);
+      setCurrentUrlIndex(nextIndex);
+      setImageSrc(imageUrls[nextIndex]);
+    } else {
+      console.log('All past event image URLs failed, using fallback');
+      setImageSrc(getFallbackImageUrl());
+    }
+  };
+
+  return (
+    <Image
+      src={imageSrc}
+      alt={program.title}
+      className={className}
+      width={width}
+      height={height}
+      onError={handleImageError}
+    />
+  );
+}
+
 function ProgramCard({ program, isPast = false }: ProgramCardProps) {
   const isComingSoon = !isPast && isEventSoon(program.date);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  
+  // Get multiple URL formats for Google Drive images
+  const imageUrls = program.image_url ? getGoogleDriveUrls(program.image_url) : [getFallbackImageUrl()];
+  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
+  const [imageSrc, setImageSrc] = useState(imageUrls[0]);
+
+  const handleImageError = () => {
+    const nextIndex = currentUrlIndex + 1;
+    if (nextIndex < imageUrls.length) {
+      console.log(`Image failed, trying fallback ${nextIndex}:`, imageUrls[nextIndex]);
+      setCurrentUrlIndex(nextIndex);
+      setImageSrc(imageUrls[nextIndex]);
+    } else {
+      console.log('All image URLs failed, using fallback');
+      setImageSrc(getFallbackImageUrl());
+    }
+  };
 
   return (
     <div className="bg-primary rounded-xl border border-custom shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2 h-full flex flex-col">
       {/* Event Image */}
-      <div className="relative h-48 sm:h-52 w-full overflow-hidden flex-shrink-0">
-        <Image
-          src={program.image_url}
-          alt={program.title}
-          fill
-          className="object-cover keep-colors transition-transform duration-300 hover:scale-105"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+      <div className="relative h-48 sm:h-52 w-full overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-800">
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            alt={program.title}
+            fill
+            className="object-cover keep-colors transition-transform duration-300 hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            onError={handleImageError}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-400">
+            <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+            </svg>
+          </div>
+        )}
         {isComingSoon && (
           <div className="absolute top-2 right-2 bg-black text-white px-2 py-1 rounded-full text-xs font-bold dark:bg-white dark:text-black">
             Coming Soon!
@@ -323,7 +386,7 @@ export default function ProgramsSection() {
               Upcoming Events
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {programs.upcoming.slice(0, 6).map((program, index) => (
+              {programs.upcoming.slice(0, 3).map((program, index) => (
                 <ProgramCard 
                   key={`${program.title}-${program.date}-${index}`}
                   program={program} 
@@ -331,13 +394,16 @@ export default function ProgramsSection() {
                 />
               ))}
             </div>
-            {programs.upcoming.length > 6 && (
+            {programs.upcoming.length > 3 && (
               <div className="text-center mt-6 sm:mt-8">
                 <a 
                   href="/events"
-                  className="inline-block px-6 sm:px-8 py-3 bg-primary text-primary border-2 border-custom rounded-lg font-semibold transition-all duration-300 hover:bg-secondary hover:scale-105 shadow-custom text-sm sm:text-base"
+                  className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 bg-primary text-primary border-2 border-custom rounded-lg font-semibold transition-all duration-300 hover:bg-secondary hover:scale-105 shadow-custom text-sm sm:text-base"
                 >
-                  View All Events ({programs.upcoming.length})
+                  <span>View All Upcoming Events</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </a>
               </div>
             )}
@@ -362,9 +428,8 @@ export default function ProgramsSection() {
                         rel="noopener noreferrer"
                         className="block"
                       >
-                        <Image
-                          src={program.image_url}
-                          alt={program.title}
+                        <PastEventImage
+                          program={program}
                           className="w-[160px] h-[160px] xs:w-[180px] xs:h-[180px] sm:w-[200px] sm:h-[200px] md:w-[220px] md:h-[220px] lg:w-[250px] lg:h-[250px] object-cover rounded-lg sm:rounded-xl transition-all duration-300 ease-in-out hover:scale-105 hover:brightness-75 keep-colors cursor-pointer shadow-sm"
                           width={250}
                           height={250}
@@ -389,9 +454,8 @@ export default function ProgramsSection() {
                         rel="noopener noreferrer"
                         className="block"
                       >
-                        <Image
-                          src={program.image_url}
-                          alt={program.title}
+                        <PastEventImage
+                          program={program}
                           className="w-[160px] h-[160px] xs:w-[180px] xs:h-[180px] sm:w-[200px] sm:h-[200px] md:w-[220px] md:h-[220px] lg:w-[250px] lg:h-[250px] object-cover rounded-lg sm:rounded-xl transition-all duration-300 ease-in-out hover:scale-105 hover:brightness-75 keep-colors cursor-pointer shadow-sm"
                           width={250}
                           height={250}

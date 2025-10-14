@@ -23,27 +23,89 @@ const SHEET_ID = process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID || 'YOUR_SHEET_ID_HERE'
 // CSV export endpoint - works without API key for public sheets
 const SHEETS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
 
-// Simple CSV parser function
+// Enhanced CSV parser function to handle complex data including multiline fields
 function parseCSVLine(line: string): string[] {
   const result: string[] = [];
   let current = '';
   let inQuotes = false;
+  let i = 0;
   
-  for (let i = 0; i < line.length; i++) {
+  while (i < line.length) {
     const char = line[i];
     
     if (char === '"') {
-      inQuotes = !inQuotes;
+      if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+        // Handle escaped quotes ("")
+        current += '"';
+        i += 2;
+        continue;
+      } else {
+        // Toggle quote state
+        inQuotes = !inQuotes;
+      }
     } else if (char === ',' && !inQuotes) {
+      // End of field
       result.push(current.trim());
       current = '';
+    } else if (char === '\r' && !inQuotes) {
+      // Skip carriage returns outside quotes
+    } else if (char === '\n' && !inQuotes) {
+      // Skip newlines outside quotes (end of record)
+      break;
     } else {
+      // Add character (including newlines within quotes)
       current += char;
+    }
+    i++;
+  }
+  
+  // Add the last field
+  result.push(current.trim());
+  
+  // Clean up the fields by removing outer quotes and normalizing whitespace
+  return result.map(field => {
+    field = field.trim();
+    if (field.startsWith('"') && field.endsWith('"')) {
+      field = field.slice(1, -1);
+      // Handle escaped quotes within the field
+      field = field.replace(/""/g, '"');
+    }
+    // Normalize whitespace and remove extra line breaks
+    field = field.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n+/g, ' ').trim();
+    return field;
+  });
+}
+
+// Enhanced function to parse CSV data that might have multiline records
+function parseCSVData(csvText: string): string[][] {
+  const lines: string[] = [];
+  const rawLines = csvText.split('\n');
+  let currentLine = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < rawLines.length; i++) {
+    const line = rawLines[i];
+    currentLine += (currentLine ? '\n' : '') + line;
+    
+    // Count quotes to determine if we're inside a quoted field
+    let quoteCount = 0;
+    for (let char of currentLine) {
+      if (char === '"') quoteCount++;
+    }
+    
+    // If quote count is even, we're not inside quotes
+    if (quoteCount % 2 === 0) {
+      lines.push(currentLine);
+      currentLine = '';
     }
   }
   
-  result.push(current.trim());
-  return result;
+  // Add any remaining line
+  if (currentLine.trim()) {
+    lines.push(currentLine);
+  }
+  
+  return lines.map(line => parseCSVLine(line));
 }
 
 // Cache duration in milliseconds (2 minutes for faster updates)
@@ -181,32 +243,75 @@ export async function fetchProgramsFromSheet(forceRefresh = false): Promise<Proc
       return { upcoming: [], past: [] };
     }
 
-    // Parse CSV data
-    const lines = csvText.trim().split('\n');
-    if (lines.length <= 1) {
+    // Parse CSV data using enhanced parser that handles multiline records
+    console.log('Raw CSV length:', csvText.length, 'characters');
+    const parsedRows = parseCSVData(csvText);
+    console.log('Parsed rows count:', parsedRows.length);
+    
+    if (parsedRows.length <= 1) {
       console.warn('Only header row found or no data');
       return { upcoming: [], past: [] };
     }
 
     // Skip header row and parse data
-    const programs: ProgramData[] = lines.slice(1).map((line, index) => {
-      // Simple CSV parsing (handling quoted values)
-      const row = parseCSVLine(line);
-      console.log(`Row ${index + 2}:`, row);
-      
-      return {
-        title: row[0] || '',
-        date: row[1] || '',
-        time: row[2] || '',
-        description: row[3] || '',
-        image_url: row[4] || '',
-        linkedin_url: row[5] || '',
-        location: row[6] || '',
-        category: row[7] || '',
-        status: row[8] || '',
-        registration_url: row[9] || ''
-      };
-    }).filter(program => program.title && program.date); // Filter out empty rows
+    const programs: ProgramData[] = parsedRows.slice(1).map((row, index) => {
+      try {
+        console.log(`Row ${index + 2}:`, row);
+        console.log(`Row ${index + 2} length:`, row.length);
+        
+        // Validate that we have enough columns
+        if (row.length < 9) {
+          console.warn(`Row ${index + 2} has insufficient columns (${row.length}):`, row);
+          // Pad with empty strings if needed
+          while (row.length < 10) {
+            row.push('');
+          }
+        }
+        
+        const program = {
+          title: (row[0] || '').trim(),
+          date: (row[1] || '').trim(),
+          time: (row[2] || '').trim(),
+          description: (row[3] || '').trim(),
+          image_url: convertGoogleDriveUrl((row[4] || '').trim()),
+          linkedin_url: (row[5] || '').trim(),
+          location: (row[6] || '').trim(),
+          category: (row[7] || '').trim(),
+          status: (row[8] || '').trim(),
+          registration_url: (row[9] || '').trim()
+        };
+        
+        console.log(`Parsed program:`, {
+          title: program.title.substring(0, 50) + '...',
+          date: program.date,
+          location: program.location,
+          status: program.status
+        });
+        
+        return program;
+      } catch (error) {
+        console.error(`Error parsing row ${index + 2}:`, error);
+        console.error('Problematic row data:', row);
+        // Return empty program to be filtered out
+        return {
+          title: '',
+          date: '',
+          time: '',
+          description: '',
+          image_url: '',
+          linkedin_url: '',
+          location: '',
+          category: '',
+          status: ''
+        };
+      }
+    }).filter(program => {
+      const isValid = program.title && program.date;
+      if (!isValid) {
+        console.log('Filtering out invalid program:', program);
+      }
+      return isValid;
+    }); // Filter out empty rows
 
     console.log('Parsed programs:', programs);
 
@@ -309,4 +414,88 @@ export function isEventSoon(dateString: string): boolean {
   } catch (error) {
     return false;
   }
+}
+
+// Helper function to convert Google Drive URLs to direct image URLs
+export function convertGoogleDriveUrl(url: string, format: 'uc' | 'thumbnail' | 'proxy' = 'uc'): string {
+  if (!url || !url.includes('drive.google.com')) {
+    return url; // Return as-is if not a Google Drive URL
+  }
+
+  // Extract file ID from Google Drive URL
+  let fileId = '';
+  
+  // Pattern 1: /file/d/FILE_ID/view
+  const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileIdMatch && fileIdMatch[1]) {
+    fileId = fileIdMatch[1];
+  }
+  
+  // Pattern 2: id=FILE_ID
+  if (!fileId) {
+    const alternativeMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (alternativeMatch && alternativeMatch[1]) {
+      fileId = alternativeMatch[1];
+    }
+  }
+  
+  // Pattern 3: /open?id=FILE_ID
+  if (!fileId) {
+    const openMatch = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
+    if (openMatch && openMatch[1]) {
+      fileId = openMatch[1];
+    }
+  }
+
+  if (!fileId) {
+    console.warn('Could not extract file ID from Google Drive URL:', url);
+    return url; // Return original URL if no file ID found
+  }
+
+  // Convert based on format preference
+  switch (format) {
+    case 'uc':
+      // Standard direct view URL (best for images)
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    
+    case 'thumbnail':
+      // Thumbnail URL (good for smaller images, faster loading)
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+    
+    case 'proxy':
+      // Alternative proxy method (sometimes more reliable)
+      return `https://lh3.googleusercontent.com/d/${fileId}`;
+    
+    default:
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  }
+}
+
+// Helper function to get multiple Google Drive URL formats for fallback
+export function getGoogleDriveUrls(url: string): string[] {
+  if (!url || !url.includes('drive.google.com')) {
+    return [url];
+  }
+  
+  return [
+    convertGoogleDriveUrl(url, 'uc'),        // Primary: Direct view
+    convertGoogleDriveUrl(url, 'thumbnail'), // Secondary: Thumbnail
+    convertGoogleDriveUrl(url, 'proxy'),     // Tertiary: Proxy
+  ].filter(Boolean);
+}
+
+// Helper function to get a fallback image URL if the main image fails
+export function getFallbackImageUrl(): string {
+  return '/logo.png'; // Use the logo as fallback, or you can use a placeholder image
+}
+
+// Debug function to test Google Drive URL conversion
+export function testGoogleDriveUrl(url: string): void {
+  console.log('=== Google Drive URL Testing ===');
+  console.log('Original URL:', url);
+  console.log('Standard (uc):', convertGoogleDriveUrl(url, 'uc'));
+  console.log('Thumbnail:', convertGoogleDriveUrl(url, 'thumbnail'));
+  console.log('Proxy:', convertGoogleDriveUrl(url, 'proxy'));
+  console.log('All URLs:', getGoogleDriveUrls(url));
+  console.log('================================');
 }

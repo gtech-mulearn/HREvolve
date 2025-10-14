@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ThemeToggle from '../theme-toggle'
 import { useTheme } from '../theme-provider'
-import { fetchProgramsFromSheet, ProgramData, formatDate, isEventSoon } from '../utils/sheetsApi'
+import { fetchProgramsFromSheet, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls } from '../utils/sheetsApi'
 
 interface ProgramCardProps {
   program: ProgramData;
@@ -16,18 +16,44 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
   const isComingSoon = !isPast && isEventSoon(program.date);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  
+  // Get multiple URL formats for Google Drive images
+  const imageUrls = program.image_url ? getGoogleDriveUrls(program.image_url) : [getFallbackImageUrl()];
+  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
+  const [imageSrc, setImageSrc] = useState(imageUrls[0]);
+
+  const handleImageError = () => {
+    const nextIndex = currentUrlIndex + 1;
+    if (nextIndex < imageUrls.length) {
+      console.log(`Image failed, trying fallback ${nextIndex}:`, imageUrls[nextIndex]);
+      setCurrentUrlIndex(nextIndex);
+      setImageSrc(imageUrls[nextIndex]);
+    } else {
+      console.log('All image URLs failed, using fallback');
+      setImageSrc(getFallbackImageUrl());
+    }
+  };
 
   return (
     <div className="rounded-xl shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)', borderWidth: '1px' }}>
       {/* Event Image */}
-      <div className="relative h-52 w-full overflow-hidden">
-        <Image
-          src={program.image_url}
-          alt={program.title}
-          fill
-          className="object-cover keep-colors transition-transform duration-300 hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+      <div className="relative h-52 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            alt={program.title}
+            fill
+            className="object-cover keep-colors transition-transform duration-300 hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={handleImageError}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-400">
+            <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+            </svg>
+          </div>
+        )}
         {isComingSoon && (
           <div className="absolute top-2 right-2 bg-black text-white px-2 py-1 rounded-full text-xs font-bold dark:bg-white dark:text-black">
             Coming Soon
