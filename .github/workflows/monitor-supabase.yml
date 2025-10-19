@@ -13,8 +13,8 @@ jobs:
     steps:
     - name: Check Supabase Status
       env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        NEXT_PUBLIC_SUPABASE_URL: "https://fkzojsyipfhpimcwclhr.supabase.co"
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrem9qc3lpcGZocGltY3djbGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNjQ5NDUsImV4cCI6MjA3Mzk0MDk0NX0.mC-n1BPKA9o7bRF1qVHJeA7JYvVUH8N6lf0eKCM8OVU"
       run: |
         # Test database connectivity
         response=$(curl -s -w "%{http_code}" -o /dev/null "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/" \
