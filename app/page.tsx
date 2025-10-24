@@ -272,7 +272,7 @@ export default function Home() {
             Connect, Inspire, Transform: HR Leading the Way
           </p>
           <div className="text-center">
-            <a href="https://makemypass.com/event/hr-evolve-onam" className="inline-block px-6 sm:px-8 md:px-10 py-3 sm:py-4 bg-white !text-black no-underline rounded-xl text-base sm:text-lg font-bold transition-all duration-300 ease-out hover:bg-gray-100 hover:shadow-xl hover:-translate-y-1 shadow-2xl">
+            <a href="https://makemypass.com/event/elevate25-hr-conclave" className="inline-block px-6 sm:px-8 md:px-10 py-3 sm:py-4 bg-white !text-black no-underline rounded-xl text-base sm:text-lg font-bold transition-all duration-300 ease-out hover:bg-gray-100 hover:shadow-xl hover:-translate-y-1 shadow-2xl">
               Registration Open
             </a>
           </div>
