@@ -103,6 +103,13 @@ export const authOptions: NextAuthOptions = {
       return true
     },
     async redirect({ url, baseUrl }) {
+      // Allowed domains for redirect
+      const allowedDomains = [
+        'https://hrevolve.org',
+        'https://hr-evolve-delta.vercel.app',
+        'http://localhost:3000' // for local development
+      ]
+      
       // For sign-in redirects, go to home page and let client-side routing handle it
       if (url === baseUrl || url === '/') {
         return '/'
@@ -111,6 +118,8 @@ export const authOptions: NextAuthOptions = {
       if (url.startsWith("/")) return `${baseUrl}${url}`
       // Allows callback URLs on the same origin
       if (new URL(url).origin === baseUrl) return url
+      // Allow redirects to other allowed domains
+      if (allowedDomains.includes(new URL(url).origin)) return url
       return baseUrl
     }
   },
