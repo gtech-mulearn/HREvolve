@@ -385,7 +385,7 @@ export default function Home() {
               <i className="fas fa-phone-alt text-2xl sm:text-3xl text-primary"></i>
               <div className="text-center">
                 <p className="text-base sm:text-lg text-primary mb-1">Phone:</p>
-                <a href="tel:+91 623535592" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base no-underline">+91 623535592</a>
+                        <a href="tel:+91 6235355926" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base no-underline">+91 6235355926</a>
                 <br />
                 <a href="tel:+91 99468 79255" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base no-underline">+91 99468 79255</a>
               </div>
