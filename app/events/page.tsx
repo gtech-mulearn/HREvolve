@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ThemeToggle from '../theme-toggle'
 import { useTheme } from '../theme-provider'
-import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls } from '../utils/sheetsApi'
+import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS } from '../utils/sheetsApi'
 
 interface ProgramCardProps {
   program: ProgramData;
@@ -91,7 +91,9 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
           <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
           </svg>
-          <span className="line-clamp-1">{program.location}</span>
+          <span className="line-clamp-1">
+            {[program.location, program.city ? CITY_LABELS[program.city] : null].filter(Boolean).join(', ')}
+          </span>
         </div>
 
         <p className="text-sm mb-4 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>
@@ -171,6 +173,10 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
+  const [cityFilter, setCityFilter] = useState<'all' | 'TRIVANDRUM' | 'KOCHI'>('all');
+
+  const filterByCity = (list: ProgramData[]) =>
+    cityFilter === 'all' ? list : list.filter((program) => program.city === cityFilter);
 
   const loadPrograms = async () => {
     try {
@@ -434,31 +440,51 @@ export default function EventsPage() {
                 : { color: 'var(--text-secondary)' }
               }
             >
-              Upcoming Events ({programs.upcoming.length})
+              Upcoming Events ({filterByCity(programs.upcoming).length})
             </button>
             <button
               onClick={() => setActiveTab('past')}
               className={`px-4 sm:px-6 py-3 sm:py-2 rounded-md font-medium transition-all duration-200 text-sm sm:text-base ${
-                activeTab === 'past' 
-                  ? 'shadow-sm' 
+                activeTab === 'past'
+                  ? 'shadow-sm'
                   : 'hover:opacity-80'
               }`}
-              style={activeTab === 'past' 
+              style={activeTab === 'past'
                 ? { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }
                 : { color: 'var(--text-secondary)' }
               }
             >
-              Past Events ({programs.past.length})
+              Past Events ({filterByCity(programs.past).length})
             </button>
           </div>
+        </div>
+
+        {/* City Filter */}
+        <div className="flex justify-center gap-2 mb-8 sm:mb-10 px-4">
+          {(['all', 'TRIVANDRUM', 'KOCHI'] as const).map((c) => (
+            <button
+              key={c}
+              onClick={() => setCityFilter(c)}
+              className="px-4 py-1.5 rounded-full text-sm font-medium border transition-colors duration-200"
+              style={
+                cityFilter === c
+                  ? { backgroundColor: 'var(--accent-color)', borderColor: 'var(--accent-color)' }
+                  : { color: 'var(--text-secondary)', borderColor: 'var(--border-custom)' }
+              }
+            >
+              <span style={cityFilter === c ? { color: 'var(--bg-primary)' } : undefined}>
+                {c === 'all' ? 'All Cities' : CITY_LABELS[c]}
+              </span>
+            </button>
+          ))}
         </div>
 
         {/* Events Grid */}
         {activeTab === 'upcoming' && (
           <div>
-            {programs.upcoming.length > 0 ? (
+            {filterByCity(programs.upcoming).length > 0 ? (
               <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
-                {programs.upcoming.map((program, index) => (
+                {filterByCity(programs.upcoming).map((program, index) => (
                   <div key={`${program.title}-${program.date}-${index}`} className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-21.33px)]">
                     <ProgramCard
                       program={program}
@@ -471,7 +497,9 @@ export default function EventsPage() {
               <div className="text-center py-12 sm:py-16">
                 <div className="text-4xl sm:text-6xl mb-4">📅</div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No Upcoming Events</h3>
-                <p className="text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>Check back soon for new events!</p>
+                <p className="text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>
+                  {cityFilter === 'all' ? 'Check back soon for new events!' : `No upcoming events in ${CITY_LABELS[cityFilter]} right now.`}
+                </p>
               </div>
             )}
           </div>
@@ -479,9 +507,9 @@ export default function EventsPage() {
 
         {activeTab === 'past' && (
           <div>
-            {programs.past.length > 0 ? (
+            {filterByCity(programs.past).length > 0 ? (
               <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
-                {programs.past.map((program, index) => (
+                {filterByCity(programs.past).map((program, index) => (
                   <div key={`${program.title}-${program.date}-${index}`} className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-21.33px)]">
                     <ProgramCard
                       program={program}
@@ -494,7 +522,9 @@ export default function EventsPage() {
               <div className="text-center py-12 sm:py-16">
                 <div className="text-4xl sm:text-6xl mb-4">🎉</div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No Past Events</h3>
-                <p className="text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>Past events will appear here once we have some!</p>
+                <p className="text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>
+                  {cityFilter === 'all' ? 'Past events will appear here once we have some!' : `No past events in ${CITY_LABELS[cityFilter]}.`}
+                </p>
               </div>
             )}
           </div>

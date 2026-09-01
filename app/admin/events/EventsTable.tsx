@@ -26,12 +26,19 @@ interface EventRow {
   image: string | null
   date: string
   location: string | null
+  city: string | null
   category: string | null
   isPublished: boolean
   createdBy: { name: string | null; email: string | null } | null
 }
 
 type FilterTab = 'all' | 'published' | 'draft'
+type CityFilter = 'all' | 'TRIVANDRUM' | 'KOCHI'
+
+const CITY_LABELS: Record<string, string> = {
+  TRIVANDRUM: 'Trivandrum',
+  KOCHI: 'Kochi',
+}
 
 const PAGE_SIZE = 10
 
@@ -40,6 +47,7 @@ export default function EventsTable({ events }: { events: EventRow[] }) {
   const { show } = useToast()
   const [query, setQuery] = useState('')
   const [tab, setTab] = useState<FilterTab>('all')
+  const [cityFilter, setCityFilter] = useState<CityFilter>('all')
   const [page, setPage] = useState(1)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<EventRow | null>(null)
@@ -57,6 +65,7 @@ export default function EventsTable({ events }: { events: EventRow[] }) {
     return events.filter((event) => {
       if (tab === 'published' && !event.isPublished) return false
       if (tab === 'draft' && event.isPublished) return false
+      if (cityFilter !== 'all' && event.city !== cityFilter) return false
       if (query.trim()) {
         const q = query.trim().toLowerCase()
         return (
@@ -67,7 +76,7 @@ export default function EventsTable({ events }: { events: EventRow[] }) {
       }
       return true
     })
-  }, [events, tab, query])
+  }, [events, tab, cityFilter, query])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const currentPage = Math.min(page, totalPages)
@@ -169,6 +178,20 @@ export default function EventsTable({ events }: { events: EventRow[] }) {
             </button>
           ))}
         </div>
+
+        <select
+          value={cityFilter}
+          onChange={(e) => {
+            setCityFilter(e.target.value as CityFilter)
+            resetToFirstPage()
+          }}
+          className="px-3 py-2 rounded-lg border text-sm font-medium"
+          style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-custom)', color: 'var(--text-primary)' }}
+        >
+          <option value="all">All Cities</option>
+          <option value="TRIVANDRUM">Trivandrum</option>
+          <option value="KOCHI">Kochi</option>
+        </select>
       </div>
 
       {filtered.length === 0 ? (
@@ -239,10 +262,12 @@ export default function EventsTable({ events }: { events: EventRow[] }) {
                         <CalendarDaysIcon className="w-3.5 h-3.5" style={{ color: 'var(--text-secondary)' }} />
                         {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
-                      {event.location && (
+                      {(event.location || event.city) && (
                         <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
                           <MapPinIcon className="w-3.5 h-3.5" />
-                          <span className="truncate max-w-[180px]">{event.location}</span>
+                          <span className="truncate max-w-[180px]">
+                            {[event.location, event.city ? CITY_LABELS[event.city] : null].filter(Boolean).join(' · ')}
+                          </span>
                         </div>
                       )}
                     </td>

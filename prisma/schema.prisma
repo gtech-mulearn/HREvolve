@@ -118,6 +118,7 @@ model Event {
   date            DateTime
   time            String?
   location        String?
+  city            City?
   category        String?
   linkedinUrl     String?
   registrationUrl String?
@@ -128,6 +129,7 @@ model Event {
   updatedAt       DateTime  @updatedAt
 
   @@index([isPublished, date])
+  @@index([city])
 }
 
 model ContactForm {
@@ -159,5 +161,10 @@ enum PartnershipStatus {
   REJECTED
   ACTIVE
   INACTIVE
+}
+
+enum City {
+  TRIVANDRUM
+  KOCHI
 }
 

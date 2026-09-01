@@ -36,11 +36,16 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     date,
     time,
     location,
+    city,
     category,
     linkedinUrl,
     registrationUrl,
     isPublished,
   } = body
+
+  if (city !== undefined && city !== null && city !== '' && city !== 'TRIVANDRUM' && city !== 'KOCHI') {
+    return NextResponse.json({ error: 'city must be TRIVANDRUM or KOCHI' }, { status: 400 })
+  }
 
   const event = await prisma.event.update({
     where: { id: params.id },
@@ -51,6 +56,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       ...(date !== undefined && { date: new Date(date) }),
       ...(time !== undefined && { time }),
       ...(location !== undefined && { location }),
+      ...(city !== undefined && { city: city || null }),
       ...(category !== undefined && { category }),
       ...(linkedinUrl !== undefined && { linkedinUrl }),
       ...(registrationUrl !== undefined && { registrationUrl }),

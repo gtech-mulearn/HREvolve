@@ -19,6 +19,7 @@ export default async function EditEventPage({ params }: { params: { id: string }
     date: event.date.toISOString().split('T')[0],
     time: event.time || '',
     location: event.location || '',
+    city: event.city || '',
     category: event.category || '',
     linkedinUrl: event.linkedinUrl || '',
     registrationUrl: event.registrationUrl || '',

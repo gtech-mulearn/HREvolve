@@ -20,6 +20,7 @@ interface EventFormData {
   date: string
   time: string
   location: string
+  city: string
   category: string
   linkedinUrl: string
   registrationUrl: string
@@ -33,6 +34,7 @@ const emptyForm: EventFormData = {
   date: '',
   time: '',
   location: '',
+  city: '',
   category: '',
   linkedinUrl: '',
   registrationUrl: '',
@@ -191,7 +193,7 @@ export default function EventForm({ initialData }: { initialData?: EventFormData
                 <Field label="Location">
                   <input
                     type="text"
-                    placeholder="e.g. Technopark, Kochi"
+                    placeholder="e.g. Technopark Phase 1"
                     value={form.location}
                     onChange={(e) => handleChange('location', e.target.value)}
                     className={inputClass}
@@ -199,6 +201,18 @@ export default function EventForm({ initialData }: { initialData?: EventFormData
                   />
                 </Field>
               </div>
+              <Field label="City">
+                <select
+                  value={form.city}
+                  onChange={(e) => handleChange('city', e.target.value)}
+                  className={inputClass}
+                  style={inputStyle}
+                >
+                  <option value="">Not set</option>
+                  <option value="TRIVANDRUM">Trivandrum</option>
+                  <option value="KOCHI">Kochi</option>
+                </select>
+              </Field>
             </div>
           </Section>
 

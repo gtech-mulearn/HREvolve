@@ -7,6 +7,7 @@ export interface ProgramData {
   image_url: string;
   linkedin_url: string;
   location: string;
+  city: string;
   category: string;
   status: string;
   registration_url?: string;
@@ -25,6 +26,7 @@ interface ApiEvent {
   date: string;
   time: string | null;
   location: string | null;
+  city: string | null;
   category: string | null;
   linkedinUrl: string | null;
   registrationUrl: string | null;
@@ -54,6 +56,7 @@ export async function fetchPublishedEvents(): Promise<ProcessedPrograms> {
       image_url: convertGoogleDriveUrl(event.image || ''),
       linkedin_url: event.linkedinUrl || '',
       location: event.location || '',
+      city: event.city || '',
       category: event.category || '',
       status: '',
       registration_url: event.registrationUrl || undefined,
@@ -175,3 +178,8 @@ export function getGoogleDriveUrls(url: string): string[] {
 export function getFallbackImageUrl(): string {
   return '/logo.png'; // Use the logo as fallback, or you can use a placeholder image
 }
+
+export const CITY_LABELS: Record<string, string> = {
+  TRIVANDRUM: 'Trivandrum',
+  KOCHI: 'Kochi',
+};

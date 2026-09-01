@@ -9,12 +9,12 @@ export async function GET(request: NextRequest) {
   }
 
   const isPublishedParam = request.nextUrl.searchParams.get('isPublished')
-  const where =
-    isPublishedParam === 'true'
-      ? { isPublished: true }
-      : isPublishedParam === 'false'
-      ? { isPublished: false }
-      : {}
+  const cityParam = request.nextUrl.searchParams.get('city')
+
+  const where: any = {}
+  if (isPublishedParam === 'true') where.isPublished = true
+  if (isPublishedParam === 'false') where.isPublished = false
+  if (cityParam === 'TRIVANDRUM' || cityParam === 'KOCHI') where.city = cityParam
 
   const events = await prisma.event.findMany({
     where,
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
     date,
     time,
     location,
+    city,
     category,
     linkedinUrl,
     registrationUrl,
@@ -49,6 +50,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'title and date are required' }, { status: 400 })
   }
 
+  if (city && city !== 'TRIVANDRUM' && city !== 'KOCHI') {
+    return NextResponse.json({ error: 'city must be TRIVANDRUM or KOCHI' }, { status: 400 })
+  }
+
   const event = await prisma.event.create({
     data: {
       title,
@@ -57,6 +62,7 @@ export async function POST(request: NextRequest) {
       date: new Date(date),
       time: time || null,
       location: location || null,
+      city: city || null,
       category: category || null,
       linkedinUrl: linkedinUrl || null,
       registrationUrl: registrationUrl || null,
