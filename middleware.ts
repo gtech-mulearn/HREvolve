@@ -25,7 +25,13 @@ export default withAuth(
         req.nextUrl.pathname.startsWith('/partner/dashboard')) {
       return NextResponse.next()
     }
-    
+
+    // /admin requires auth (enforced by the `authorized` callback below, since it's
+    // not in the public allowlist). The actual role check (ADMIN/HOST) is done in
+    // app/admin/layout.tsx via getServerSession, not here - the JWT's `role` claim
+    // only refreshes on login, so gating on it at the edge would keep a user who was
+    // just promoted via /admin/users locked out until they sign out and back in.
+
     // For other protected routes, continue
     return NextResponse.next()
   },
@@ -33,10 +39,11 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         // Allow unauthenticated access to public pages
-        if (req.nextUrl.pathname === '/' || 
+        if (req.nextUrl.pathname === '/' ||
             req.nextUrl.pathname.startsWith('/auth') ||
             req.nextUrl.pathname.startsWith('/events') ||
-            req.nextUrl.pathname.startsWith('/api/auth')) {
+            req.nextUrl.pathname.startsWith('/api/auth') ||
+            req.nextUrl.pathname.startsWith('/api/events')) {
           return true
         }
         

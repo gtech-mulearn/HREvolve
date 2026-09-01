@@ -4,9 +4,9 @@
 echo "🔄 Syncing Supabase credentials..."
 
 # You'll need to update these when credentials change
-# Get these from: https://app.supabase.com/project/fkzojsyipfhpimcwclhr/settings/api
+# Get these from: https://app.supabase.com/project/ueutwediubqrcevqzojz/settings/api
 
-SUPABASE_URL="https://fkzojsyipfhpimcwclhr.supabase.co"
+SUPABASE_URL="https://ueutwediubqrcevqzojz.supabase.co"
 SUPABASE_ANON_KEY="your-new-anon-key-here"
 
 # For Vercel deployment

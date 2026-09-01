@@ -1,6 +1,6 @@
 # Supabase Configuration
 # This file helps manage Supabase project settings
-project_id = "fkzojsyipfhpimcwclhr"
+project_id = "ueutwediubqrcevqzojz"
 
 [db]
 port = 54322

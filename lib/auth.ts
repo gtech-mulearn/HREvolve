@@ -78,18 +78,23 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role
         session.user.userType = token.userType
         
-        // Fetch additional user data including profileCompleted and userType
+        // Fetch additional user data including profileCompleted, userType, and role
+        // (role is re-fetched fresh, not just taken from the JWT, so a role change
+        // made via /admin/users takes effect on the user's next request rather than
+        // requiring them to sign out and back in)
         if (session.user.email) {
           try {
             const user = await prisma.user.findUnique({
               where: { email: session.user.email },
-              select: { 
+              select: {
                 profileCompleted: true,
-                userType: true
+                userType: true,
+                role: true
               }
             })
             session.user.profileCompleted = user?.profileCompleted || false
             session.user.userType = user?.userType || 'MEMBER'
+            session.user.role = user?.role || token.role
           } catch (error) {
             console.error('Failed to fetch user profile status:', error)
             session.user.profileCompleted = false

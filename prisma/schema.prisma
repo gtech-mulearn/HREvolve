@@ -60,6 +60,7 @@ model User {
   accounts         Account[]
   sessions         Session[]
   partner          Partner?
+  events           Event[]
 }
 
 model Partner {
@@ -110,18 +111,23 @@ model EmailVerification {
 }
 
 model Event {
-  id          String    @id @default(cuid())
-  title       String
-  description String?
-  image       String?
-  date        DateTime
-  location    String?
-  type        EventType @default(UPCOMING)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  createdBy   String?
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  image           String?
+  date            DateTime
+  time            String?
+  location        String?
+  category        String?
+  linkedinUrl     String?
+  registrationUrl String?
+  isPublished     Boolean   @default(false)
+  createdById     String?
+  createdBy       User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  @@index([type, date])
+  @@index([isPublished, date])
 }
 
 model ContactForm {
@@ -138,6 +144,7 @@ model ContactForm {
 enum UserRole {
   USER
   ADMIN
+  HOST
   HR_MANAGER
 }
 
@@ -154,8 +161,3 @@ enum PartnershipStatus {
   INACTIVE
 }
 
-enum EventType {
-  UPCOMING
-  PAST
-  FEATURED
-}

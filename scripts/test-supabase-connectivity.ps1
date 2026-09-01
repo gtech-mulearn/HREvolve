@@ -1,8 +1,8 @@
 # PowerShell script to test Supabase connectivity
 # This mimics what the GitHub Action does
 
-$supabaseUrl = "https://fkzojsyipfhpimcwclhr.supabase.co"
-$supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrem9qc3lpcGZocGltY3djbGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNjQ5NDUsImV4cCI6MjA3Mzk0MDk0NX0.mC-n1BPKA9o7bRF1qVHJeA7JYvVUH8N6lf0eKCM8OVU"
+$supabaseUrl = "https://ueutwediubqrcevqzojz.supabase.co"
+$supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVldXR3ZWRpdWJxcmNldnF6b2p6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMTk2ODQsImV4cCI6MjA3Mzc5NTY4NH0.8TXl10oz_QrbWgu6dYtE6c-wCn1X_knjrYqSwCYlAwM"
 
 Write-Host "🔍 Testing Supabase connectivity..."
 Write-Host "URL: $supabaseUrl/rest/v1/"

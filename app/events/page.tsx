@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ThemeToggle from '../theme-toggle'
 import { useTheme } from '../theme-provider'
-import { fetchProgramsFromSheet, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls } from '../utils/sheetsApi'
+import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls } from '../utils/sheetsApi'
 
 interface ProgramCardProps {
   program: ProgramData;
@@ -34,8 +34,16 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
     }
   };
 
+  const hasLinkedIn = !!program.linkedin_url;
+
   return (
-    <div className="rounded-xl shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)', borderWidth: '1px' }}>
+    <div
+      onClick={() => {
+        if (hasLinkedIn) window.open(program.linkedin_url, '_blank', 'noopener,noreferrer');
+      }}
+      className={`rounded-xl shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2 ${hasLinkedIn ? 'cursor-pointer' : ''}`}
+      style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)', borderWidth: '1px' }}
+    >
       {/* Event Image */}
       <div className="relative h-52 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
         {imageSrc ? (
@@ -90,43 +98,26 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
           {program.description}
         </p>
 
-        <div className="flex gap-2">
-          {program.linkedin_url && (
-            <a
-              href={program.linkedin_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 text-center py-2 px-4 rounded-lg font-medium transition-all duration-200 border hover:opacity-80"
-              style={{ 
-                color: 'var(--text-primary)', 
-                borderColor: 'var(--text-primary)' 
-              }}
-            >
-              View on LinkedIn
-            </a>
-          )}
-          
-          {!isPast && program.registration_url && (
-            <a
-              href={program.registration_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 text-center py-2 px-4 rounded-lg font-bold transition-all duration-200"
-              style={{
-                backgroundColor: isDark ? '#ffffff' : '#000000',
-                color: isDark ? '#000000' : '#ffffff',
-                border: 'none',
-                textDecoration: 'none',
-                WebkitTextFillColor: isDark ? '#000000' : '#ffffff',
-                display: 'block'
-              }}
-            >
-              <span style={{ color: isDark ? '#000000' : '#ffffff' }}>
-                Register Now
-              </span>
-            </a>
-          )}
-        </div>
+        {!isPast && program.registration_url && (
+          <a
+            href={program.registration_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="block text-center py-2 px-4 rounded-lg font-bold transition-all duration-200"
+            style={{
+              backgroundColor: isDark ? '#ffffff' : '#000000',
+              color: isDark ? '#000000' : '#ffffff',
+              border: 'none',
+              textDecoration: 'none',
+              WebkitTextFillColor: isDark ? '#000000' : '#ffffff',
+            }}
+          >
+            <span style={{ color: isDark ? '#000000' : '#ffffff' }}>
+              Register
+            </span>
+          </a>
+        )}
       </div>
 
       {/* Script for mobile navigation */}
@@ -181,14 +172,12 @@ export default function EventsPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
 
-  const loadPrograms = async (forceRefresh = false) => {
+  const loadPrograms = async () => {
     try {
-      console.log('Starting to load programs...', { forceRefresh });
       setLoading(true);
       setError(null);
-      
-      const data = await fetchProgramsFromSheet(forceRefresh);
-      console.log('Programs loaded successfully:', data);
+
+      const data = await fetchPublishedEvents();
       setPrograms(data);
       setError(null);
     } catch (err) {
@@ -201,20 +190,7 @@ export default function EventsPage() {
   };
 
   useEffect(() => {
-    console.log('EventsPage component mounted');
-    
-    // Check if page was hard refreshed (F5 or Ctrl+F5)
-    const wasHardRefresh = typeof window !== 'undefined' && 
-      window.performance && 
-      window.performance.navigation && 
-      window.performance.navigation.type === 1; // TYPE_RELOAD
-    
-    if (wasHardRefresh) {
-      console.log('Hard refresh detected, forcing cache bypass');
-      loadPrograms(true); // Force refresh on F5
-    } else {
-      loadPrograms();
-    }
+    loadPrograms();
 
     // Mobile navigation functionality
     const mobileNav = document.querySelector(".mobile-nav")
@@ -481,13 +457,14 @@ export default function EventsPage() {
         {activeTab === 'upcoming' && (
           <div>
             {programs.upcoming.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
                 {programs.upcoming.map((program, index) => (
-                  <ProgramCard 
-                    key={`${program.title}-${program.date}-${index}`}
-                    program={program} 
-                    isPast={false}
-                  />
+                  <div key={`${program.title}-${program.date}-${index}`} className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-21.33px)]">
+                    <ProgramCard
+                      program={program}
+                      isPast={false}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (
@@ -503,13 +480,14 @@ export default function EventsPage() {
         {activeTab === 'past' && (
           <div>
             {programs.past.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
                 {programs.past.map((program, index) => (
-                  <ProgramCard 
-                    key={`${program.title}-${program.date}-${index}`}
-                    program={program} 
-                    isPast={true}
-                  />
+                  <div key={`${program.title}-${program.date}-${index}`} className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-21.33px)]">
+                    <ProgramCard
+                      program={program}
+                      isPast={true}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (

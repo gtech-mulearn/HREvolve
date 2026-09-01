@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useTheme } from '../theme-provider';
-import { fetchProgramsFromSheet, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls } from '../utils/sheetsApi';
+import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls } from '../utils/sheetsApi';
 
 interface ProgramCardProps {
   program: ProgramData;
@@ -69,8 +69,15 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
     }
   };
 
+  const hasLinkedIn = !!program.linkedin_url;
+
   return (
-    <div className="bg-primary rounded-xl border border-custom shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2 h-full flex flex-col">
+    <div
+      onClick={() => {
+        if (hasLinkedIn) window.open(program.linkedin_url, '_blank', 'noopener,noreferrer');
+      }}
+      className={`bg-primary rounded-xl border border-custom shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2 h-full flex flex-col ${hasLinkedIn ? 'cursor-pointer' : ''}`}
+    >
       {/* Event Image */}
       <div className="relative h-48 sm:h-52 w-full overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-800">
         {imageSrc ? (
@@ -134,60 +141,47 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-auto">
-          <a
-            href={program.linkedin_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 px-4 py-2.5 bg-secondary hover:bg-tertiary text-primary rounded-lg text-center text-sm font-medium transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
-          >
-            View on LinkedIn
-          </a>
-          
-          {!isPast && program.registration_url && (
+        {!isPast && program.registration_url && (
+          <div className="mt-auto">
             <a
               href={program.registration_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 px-4 py-2.5 rounded-lg text-center text-sm font-medium transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+              onClick={(e) => e.stopPropagation()}
+              className="block px-4 py-2.5 rounded-lg text-center text-sm font-medium transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
               style={{
                 backgroundColor: isDark ? '#ffffff' : '#000000',
                 color: isDark ? '#000000' : '#ffffff',
                 border: 'none',
                 textDecoration: 'none',
                 WebkitTextFillColor: isDark ? '#000000' : '#ffffff',
-                display: 'block'
               }}
             >
               <span style={{ color: isDark ? '#000000' : '#ffffff' }}>
-                Register Now
+                Register
               </span>
             </a>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 export default function ProgramsSection() {
-  console.log('ProgramsSection component rendering');
-  
-  const [programs, setPrograms] = useState<{ upcoming: ProgramData[]; past: ProgramData[] }>({ 
+  const [programs, setPrograms] = useState<{ upcoming: ProgramData[]; past: ProgramData[] }>({
     upcoming: [], 
     past: [] 
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadPrograms = async (forceRefresh = false) => {
+  const loadPrograms = async () => {
     try {
-      console.log('Starting to load programs...', { forceRefresh });
       setLoading(true);
       setError(null);
-      
-      const data = await fetchProgramsFromSheet(forceRefresh);
-      console.log('Programs loaded successfully:', data);
+
+      const data = await fetchPublishedEvents();
       setPrograms(data);
       setError(null);
     } catch (err) {
@@ -200,21 +194,7 @@ export default function ProgramsSection() {
   };
 
   useEffect(() => {
-    console.log('ProgramsSection component mounted');
-    
-    // Check if page was hard refreshed (F5 or Ctrl+F5)
-    // This is a simple heuristic - if there's no cached data and performance.navigation exists
-    const wasHardRefresh = typeof window !== 'undefined' && 
-      window.performance && 
-      window.performance.navigation && 
-      window.performance.navigation.type === 1; // TYPE_RELOAD
-    
-    if (wasHardRefresh) {
-      console.log('Hard refresh detected, forcing cache bypass');
-      loadPrograms(true); // Force refresh on F5
-    } else {
-      loadPrograms();
-    }
+    loadPrograms();
   }, []);
 
   // Continuous auto-scroll carousel for past events
@@ -385,13 +365,14 @@ export default function ProgramsSection() {
             <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary mb-6 sm:mb-8 text-center">
               Upcoming Events
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
               {programs.upcoming.slice(0, 3).map((program, index) => (
-                <ProgramCard 
-                  key={`${program.title}-${program.date}-${index}`}
-                  program={program} 
-                  isPast={false}
-                />
+                <div key={`${program.title}-${program.date}-${index}`} className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-21.33px)]">
+                  <ProgramCard
+                    program={program}
+                    isPast={false}
+                  />
+                </div>
               ))}
             </div>
             {programs.upcoming.length > 3 && (
@@ -485,7 +466,7 @@ export default function ProgramsSection() {
               No Events Found
             </h3>
             <p className="text-text-secondary">
-              Events will appear here once they are added to the sheet.
+              Events will appear here once they are published.
             </p>
           </div>
         )}
