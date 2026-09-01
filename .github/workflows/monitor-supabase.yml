@@ -24,5 +24,8 @@ jobs:
           echo "✅ Supabase is active and healthy"
         else
           echo "❌ Supabase may be paused or having issues (HTTP: $response)"
-          # You could add notification logic here (Slack, email, etc.)
+          # Fail the job so GitHub emails repo watchers about the failed
+          # scheduled run - otherwise this check silently reported "success"
+          # even when Supabase was actually down.
+          exit 1
         fi

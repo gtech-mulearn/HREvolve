@@ -23,12 +23,14 @@ async function keepAlive() {
       .limit(1)
     
     if (error) {
-      console.log('Keep-alive query error:', error.message)
+      console.error('Keep-alive query error:', error.message)
+      process.exit(1)
     } else {
       console.log('Keep-alive successful:', new Date().toISOString())
     }
   } catch (error) {
-    console.log('Keep-alive failed:', error.message)
+    console.error('Keep-alive failed:', error.message)
+    process.exit(1)
   }
 }
 
