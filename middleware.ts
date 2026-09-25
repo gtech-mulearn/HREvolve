@@ -4,10 +4,11 @@ import { NextResponse } from "next/server"
 export default withAuth(
   async function middleware(req) {
     // Allow access to auth routes, API routes, and home page
-    if (req.nextUrl.pathname.startsWith('/auth') || 
+    if (req.nextUrl.pathname.startsWith('/auth') ||
         req.nextUrl.pathname.startsWith('/api') ||
         req.nextUrl.pathname === '/' ||
-        req.nextUrl.pathname.startsWith('/events')) {
+        req.nextUrl.pathname.startsWith('/events') ||
+        req.nextUrl.pathname.startsWith('/gallery')) {
       return NextResponse.next()
     }
     
@@ -42,8 +43,10 @@ export default withAuth(
         if (req.nextUrl.pathname === '/' ||
             req.nextUrl.pathname.startsWith('/auth') ||
             req.nextUrl.pathname.startsWith('/events') ||
+            req.nextUrl.pathname.startsWith('/gallery') ||
             req.nextUrl.pathname.startsWith('/api/auth') ||
-            req.nextUrl.pathname.startsWith('/api/events')) {
+            req.nextUrl.pathname.startsWith('/api/events') ||
+            req.nextUrl.pathname.startsWith('/api/gallery')) {
           return true
         }
         

@@ -8,6 +8,7 @@ import {
   CheckCircleIcon,
   DocumentIcon,
   UsersIcon,
+  PhotoIcon,
   ArrowRightIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline'
@@ -16,11 +17,12 @@ export default async function AdminDashboardPage() {
   const session = await getServerSession(authOptions)
   const isAdmin = session?.user.role === 'ADMIN'
 
-  const [totalEvents, publishedEvents, draftEvents, staffCount, recentEvents] = await Promise.all([
+  const [totalEvents, publishedEvents, draftEvents, staffCount, pendingGalleryCount, recentEvents] = await Promise.all([
     prisma.event.count(),
     prisma.event.count({ where: { isPublished: true } }),
     prisma.event.count({ where: { isPublished: false } }),
     prisma.user.count({ where: { role: { in: ['ADMIN', 'HOST'] } } }),
+    prisma.galleryImage.count({ where: { isPublished: false } }),
     prisma.event.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
   ])
 
@@ -73,6 +75,24 @@ export default async function AdminDashboardPage() {
           </div>
         ))}
       </div>
+
+      {isAdmin && pendingGalleryCount > 0 && (
+        <Link
+          href="/admin/gallery?tab=pending"
+          className="flex items-center justify-between gap-4 mb-8 sm:mb-10 px-5 sm:px-6 py-4 rounded-2xl border shadow-sm transition-shadow duration-200 hover:shadow-md"
+          style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-custom)' }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">
+              <PhotoIcon className="w-5 h-5" />
+            </div>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+              {pendingGalleryCount} photo{pendingGalleryCount === 1 ? '' : 's'} awaiting approval
+            </p>
+          </div>
+          <ArrowRightIcon className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-secondary)' }} />
+        </Link>
+      )}
 
       <div
         className="rounded-2xl border shadow-sm overflow-hidden"

@@ -315,6 +315,9 @@ export default function EventsPage() {
               <Link href="/#programs" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
                 Programs
               </Link>
+              <Link href="/gallery" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
+                Gallery
+              </Link>
               <Link href="/#contact" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
                 Contact
               </Link>
@@ -391,6 +394,11 @@ export default function EventsPage() {
           <li className="mb-4">
             <Link href="/#programs" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
               Programs
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link href="/gallery" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
+              Gallery
             </Link>
           </li>
           <li className="mb-4">

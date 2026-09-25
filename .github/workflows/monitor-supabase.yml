@@ -17,7 +17,7 @@ jobs:
         NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVldXR3ZWRpdWJxcmNldnF6b2p6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMTk2ODQsImV4cCI6MjA3Mzc5NTY4NH0.8TXl10oz_QrbWgu6dYtE6c-wCn1X_knjrYqSwCYlAwM"
       run: |
         # Test database connectivity
-        response=$(curl -s -w "%{http_code}" -o /dev/null "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/" \
+        response=$(curl -s -w "%{http_code}" -o /dev/null "$NEXT_PUBLIC_SUPABASE_URL/auth/v1/health" \
           -H "apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY")
         
         if [ "$response" -eq 200 ]; then

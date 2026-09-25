@@ -162,8 +162,11 @@ export default function Home() {
               <a href="#about" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
                 About
               </a>
-              <a href="#programs" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
+              <a href="/events" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
                 Programs
+              </a>
+              <a href="/gallery" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
+                Gallery
               </a>
               <a href="#contact" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
                 Contact
@@ -243,6 +246,11 @@ export default function Home() {
           <li>
             <a href="#programs" className="block text-primary no-underline py-4 px-4 rounded-lg hover:bg-secondary transition-colors duration-300 text-lg font-medium">
               Programs
+            </a>
+          </li>
+          <li>
+            <a href="/gallery" className="block text-primary no-underline py-4 px-4 rounded-lg hover:bg-secondary transition-colors duration-300 text-lg font-medium">
+              Gallery
             </a>
           </li>
           <li>

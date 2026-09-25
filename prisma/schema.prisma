@@ -61,6 +61,7 @@ model User {
   sessions         Session[]
   partner          Partner?
   events           Event[]
+  galleryImages    GalleryImage[]
 }
 
 model Partner {
@@ -130,6 +131,20 @@ model Event {
 
   @@index([isPublished, date])
   @@index([city])
+}
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  url         String
+  path        String
+  caption     String?
+  isPublished Boolean  @default(false)
+  createdById String?
+  createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished, createdAt])
 }
 
 model ContactForm {

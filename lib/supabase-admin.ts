@@ -17,3 +17,14 @@ export async function ensureEventImagesBucket() {
     throw error
   }
 }
+
+export const GALLERY_IMAGES_BUCKET = 'gallery-images'
+
+export async function ensureGalleryImagesBucket() {
+  const { error } = await supabaseAdmin.storage.createBucket(GALLERY_IMAGES_BUCKET, {
+    public: true,
+  })
+  if (error && !error.message.includes('already exists')) {
+    throw error
+  }
+}

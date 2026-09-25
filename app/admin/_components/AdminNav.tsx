@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Squares2X2Icon, CalendarDaysIcon, UsersIcon } from '@heroicons/react/24/outline'
+import { Squares2X2Icon, CalendarDaysIcon, PhotoIcon, UsersIcon } from '@heroicons/react/24/outline'
 import {
   Squares2X2Icon as Squares2X2IconSolid,
   CalendarDaysIcon as CalendarDaysIconSolid,
+  PhotoIcon as PhotoIconSolid,
   UsersIcon as UsersIconSolid,
 } from '@heroicons/react/24/solid'
 
@@ -15,6 +16,7 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
   const links = [
     { href: '/admin', label: 'Dashboard', icon: Squares2X2Icon, activeIcon: Squares2X2IconSolid, exact: true },
     { href: '/admin/events', label: 'Events', icon: CalendarDaysIcon, activeIcon: CalendarDaysIconSolid },
+    { href: '/admin/gallery', label: 'Gallery', icon: PhotoIcon, activeIcon: PhotoIconSolid },
     ...(isAdmin
       ? [{ href: '/admin/users', label: 'Users', icon: UsersIcon, activeIcon: UsersIconSolid }]
       : []),
