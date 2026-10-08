@@ -25,6 +25,7 @@ interface EventFormData {
   linkedinUrl: string
   registrationUrl: string
   isPublished: boolean
+  isFlagship: boolean
 }
 
 const emptyForm: EventFormData = {
@@ -39,6 +40,7 @@ const emptyForm: EventFormData = {
   linkedinUrl: '',
   registrationUrl: '',
   isPublished: false,
+  isFlagship: false,
 }
 
 const inputStyle = {
@@ -360,6 +362,35 @@ export default function EventForm({ initialData }: { initialData?: EventFormData
                 <span
                   className="inline-block h-5 w-5 mt-0.5 rounded-full bg-white shadow transform transition-transform duration-200"
                   style={{ transform: form.isPublished ? 'translateX(22px)' : 'translateX(2px)' }}
+                />
+              </span>
+            </button>
+          </Section>
+
+          <Section title="Flagship Program">
+            <button
+              type="button"
+              onClick={() => handleChange('isFlagship', !form.isFlagship)}
+              className="w-full flex items-center justify-between p-3.5 rounded-xl border transition-colors duration-150"
+              style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)' }}
+            >
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  Make this a Flagship event?
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  {form.isFlagship
+                    ? 'Yes — shown under the Flagship Program tab'
+                    : 'No — shown under the Monthly Programs tab'}
+                </p>
+              </div>
+              <span
+                className="relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors duration-200"
+                style={{ backgroundColor: form.isFlagship ? 'var(--accent-color)' : 'var(--border-custom)' }}
+              >
+                <span
+                  className="inline-block h-5 w-5 mt-0.5 rounded-full bg-white shadow transform transition-transform duration-200"
+                  style={{ transform: form.isFlagship ? 'translateX(22px)' : 'translateX(2px)' }}
                 />
               </span>
             </button>

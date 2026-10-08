@@ -1,0 +1,28 @@
+name: Send Event Day Reminders
+
+on:
+  schedule:
+    # 2:30 AM UTC = 8:00 AM IST, every day
+    - cron: '30 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Trigger event reminder emails
+      env:
+        CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      run: |
+        response=$(curl -s -w "\n%{http_code}" -X POST "https://hrevolve.org/api/cron/event-reminders" \
+          -H "x-cron-secret: $CRON_SECRET")
+        http_code=$(echo "$response" | tail -n1)
+        body=$(echo "$response" | sed '$d')
+
+        echo "$body"
+
+        if [ "$http_code" -ge 400 ]; then
+          echo "::error::Event reminder cron failed with HTTP $http_code"
+          exit 1
+        fi

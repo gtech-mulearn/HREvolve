@@ -174,9 +174,15 @@ export default function EventsPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
   const [cityFilter, setCityFilter] = useState<'all' | 'TRIVANDRUM' | 'KOCHI'>('all');
+  const [programType, setProgramType] = useState<'monthly' | 'flagship'>('monthly');
 
   const filterByCity = (list: ProgramData[]) =>
     cityFilter === 'all' ? list : list.filter((program) => program.city === cityFilter);
+
+  const typeFiltered = {
+    upcoming: programs.upcoming.filter((program) => program.is_flagship === (programType === 'flagship')),
+    past: programs.past.filter((program) => program.is_flagship === (programType === 'flagship')),
+  };
 
   const loadPrograms = async () => {
     try {
@@ -426,11 +432,45 @@ export default function EventsPage() {
             Back to Home
           </Link>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            All Events
+            {programType === 'flagship' ? 'Flagship Program' : 'Monthly Programs'}
           </h1>
           <p className="text-base sm:text-lg max-w-2xl mx-auto px-4" style={{ color: 'var(--text-secondary)' }}>
-            Browse all our upcoming and past HR events, workshops, and conferences
+            {programType === 'flagship'
+              ? 'Our marquee HR Evolve events — the big-ticket conclaves and conferences'
+              : 'Browse all our upcoming and past HR events, workshops, and conferences'}
           </p>
+        </div>
+
+        {/* Program Switch */}
+        <div className="flex justify-center mb-8 sm:mb-10 md:mb-12 px-4">
+          <div className="rounded-xl p-1.5 flex flex-col sm:flex-row w-full sm:w-auto gap-1" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-custom)' }}>
+            <button
+              onClick={() => setProgramType('monthly')}
+              className="px-5 sm:px-7 py-3 rounded-lg font-semibold transition-all duration-200 text-sm sm:text-base"
+              style={
+                programType === 'monthly'
+                  ? { backgroundColor: 'var(--accent-color)' }
+                  : { color: 'var(--text-secondary)' }
+              }
+            >
+              <span style={programType === 'monthly' ? { color: 'var(--bg-primary)' } : undefined}>
+                Monthly Programs
+              </span>
+            </button>
+            <button
+              onClick={() => setProgramType('flagship')}
+              className="px-5 sm:px-7 py-3 rounded-lg font-semibold transition-all duration-200 text-sm sm:text-base"
+              style={
+                programType === 'flagship'
+                  ? { backgroundColor: 'var(--accent-color)' }
+                  : { color: 'var(--text-secondary)' }
+              }
+            >
+              <span style={programType === 'flagship' ? { color: 'var(--bg-primary)' } : undefined}>
+                Flagship Program
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -448,7 +488,7 @@ export default function EventsPage() {
                 : { color: 'var(--text-secondary)' }
               }
             >
-              Upcoming Events ({filterByCity(programs.upcoming).length})
+              Upcoming Events ({filterByCity(typeFiltered.upcoming).length})
             </button>
             <button
               onClick={() => setActiveTab('past')}
@@ -462,7 +502,7 @@ export default function EventsPage() {
                 : { color: 'var(--text-secondary)' }
               }
             >
-              Past Events ({filterByCity(programs.past).length})
+              Past Events ({filterByCity(typeFiltered.past).length})
             </button>
           </div>
         </div>
@@ -490,9 +530,9 @@ export default function EventsPage() {
         {/* Events Grid */}
         {activeTab === 'upcoming' && (
           <div>
-            {filterByCity(programs.upcoming).length > 0 ? (
+            {filterByCity(typeFiltered.upcoming).length > 0 ? (
               <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
-                {filterByCity(programs.upcoming).map((program, index) => (
+                {filterByCity(typeFiltered.upcoming).map((program, index) => (
                   <div key={`${program.title}-${program.date}-${index}`} className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-21.33px)]">
                     <ProgramCard
                       program={program}
@@ -515,9 +555,9 @@ export default function EventsPage() {
 
         {activeTab === 'past' && (
           <div>
-            {filterByCity(programs.past).length > 0 ? (
+            {filterByCity(typeFiltered.past).length > 0 ? (
               <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
-                {filterByCity(programs.past).map((program, index) => (
+                {filterByCity(typeFiltered.past).map((program, index) => (
                   <div key={`${program.title}-${program.date}-${index}`} className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-21.33px)]">
                     <ProgramCard
                       program={program}

@@ -45,12 +45,13 @@ export async function GET(request: NextRequest) {
 
     console.log('Found user with partner:', user)
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        userType: user.userType
+        userType: user.userType,
+        city: user.city
       },
       partner: user.partner,
       mandatoryFieldsComplete: checkMandatoryFields(user.partner)
@@ -74,6 +75,10 @@ export async function POST(request: NextRequest) {
     console.log('Creating/updating partner profile for user:', session.user.email)
     console.log('Partner data:', data)
 
+    if (!data.city || (data.city !== 'TRIVANDRUM' && data.city !== 'KOCHI')) {
+      return NextResponse.json({ error: 'Please select a valid location' }, { status: 400 })
+    }
+
     // Find the user first
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -89,9 +94,10 @@ export async function POST(request: NextRequest) {
     // Update user type to PARTNER
     await prisma.user.update({
       where: { id: user.id },
-      data: { 
+      data: {
         userType: 'PARTNER',
-        profileCompleted: true
+        profileCompleted: true,
+        city: data.city
       }
     })
 

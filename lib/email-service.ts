@@ -138,6 +138,132 @@ export async function sendVerificationEmail({ email, name, verificationUrl }: Em
   }
 }
 
+export interface EventReminderEvent {
+  title: string
+  dateLabel: string
+  time: string | null
+  location: string | null
+  registrationUrl: string | null
+}
+
+const BCC_BATCH_SIZE = 40
+
+function buildEventReminderContent(event: EventReminderEvent) {
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>${event.title} - Today!</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #000; color: white; padding: 20px; text-align: center; }
+        .content { background: #f9f9f9; padding: 30px; }
+        .details { background: #eee; border-radius: 5px; padding: 15px; margin: 20px 0; }
+        .details p { margin: 6px 0; }
+        .button {
+          display: inline-block;
+          background: #000 !important;
+          color: white !important;
+          padding: 15px 40px;
+          text-decoration: none;
+          border-radius: 5px;
+          margin: 10px 0;
+          font-weight: bold;
+          font-size: 16px;
+        }
+        .footer { background: #f0f0f0; padding: 20px; text-align: center; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>📅 Happening Today</h1>
+        </div>
+        <div class="content">
+          <h2>${event.title}</h2>
+          <p>This is a reminder that the event below is happening today.</p>
+          <div class="details">
+            <p><strong>📅 Date:</strong> ${event.dateLabel}</p>
+            ${event.time ? `<p><strong>⏰ Time:</strong> ${event.time}</p>` : ''}
+            ${event.location ? `<p><strong>📍 Location:</strong> ${event.location}</p>` : ''}
+          </div>
+          ${
+            event.registrationUrl
+              ? `<div style="text-align: center;"><a href="${event.registrationUrl}" class="button">View / Register</a></div>`
+              : ''
+          }
+          <p>See you there!</p>
+          <p>Best regards,<br>The HR Evolve Team</p>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} HR Evolve. All rights reserved.</p>
+          <p>This is an automated event reminder, please do not reply to this message.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `
+
+  const textContent = `
+    HR EVOLVE - HAPPENING TODAY
+
+    ${event.title}
+
+    This is a reminder that the event below is happening today.
+
+    Date: ${event.dateLabel}
+    ${event.time ? `Time: ${event.time}\n` : ''}${event.location ? `Location: ${event.location}\n` : ''}
+    ${event.registrationUrl ? `View / Register: ${event.registrationUrl}\n` : ''}
+    See you there!
+
+    Best regards,
+    The HR Evolve Team
+  `
+
+  return { htmlContent, textContent }
+}
+
+// Sends the "event happening today" reminder to a list of recipient emails,
+// BCC-batched so recipients never see each other's addresses and so we don't
+// put hundreds of addresses in a single SMTP call.
+export async function sendEventReminderEmails(event: EventReminderEvent, recipientEmails: string[]) {
+  if (!transporter) {
+    console.log('SMTP not configured, skipping event reminder emails')
+    return { sent: 0, failed: 0 }
+  }
+  if (recipientEmails.length === 0) {
+    return { sent: 0, failed: 0 }
+  }
+
+  const { htmlContent, textContent } = buildEventReminderContent(event)
+  const fromAddress = `"HR Evolve" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`
+
+  let sent = 0
+  let failed = 0
+
+  for (let i = 0; i < recipientEmails.length; i += BCC_BATCH_SIZE) {
+    const batch = recipientEmails.slice(i, i + BCC_BATCH_SIZE)
+    try {
+      await transporter.sendMail({
+        from: fromAddress,
+        to: fromAddress,
+        bcc: batch,
+        subject: `Happening Today: ${event.title}`,
+        text: textContent,
+        html: htmlContent,
+      })
+      sent += batch.length
+    } catch (error) {
+      console.error(`Failed to send event reminder batch (${batch.length} recipients):`, error)
+      failed += batch.length
+    }
+  }
+
+  return { sent, failed }
+}
+
 export async function sendWelcomeEmail(email: string, name: string) {
   // If no transporter configured, skip email sending
   if (!transporter) {

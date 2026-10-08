@@ -25,13 +25,21 @@ export async function POST(request: NextRequest) {
       experience,
       linkedinUrl,
       expertise,
-      interests
+      interests,
+      city
     } = body
 
     // Validate required fields
     if (!name || !phone || !organization || !designation || !experience) {
       return NextResponse.json(
         { error: 'Please fill in all required fields (name, phone, organization, designation, experience)' },
+        { status: 400 }
+      )
+    }
+
+    if (!city || (city !== 'TRIVANDRUM' && city !== 'KOCHI')) {
+      return NextResponse.json(
+        { error: 'Please select a valid location' },
         { status: 400 }
       )
     }
@@ -78,6 +86,7 @@ export async function POST(request: NextRequest) {
         linkedinUrl: linkedinUrl || null,
         expertise: expertise || null,
         interests: interests || null,
+        city,
         profileCompleted: true,
         updatedAt: new Date()
       }
@@ -98,6 +107,7 @@ export async function POST(request: NextRequest) {
           linkedinUrl: true,
           expertise: true,
           interests: true,
+          city: true,
           profileCompleted: true,
           userType: true,
           createdAt: true,
@@ -158,6 +168,7 @@ export async function GET(request: NextRequest) {
         linkedinUrl: true,
         expertise: true,
         interests: true,
+        city: true,
         profileCompleted: true,
         userType: true,
         createdAt: true,

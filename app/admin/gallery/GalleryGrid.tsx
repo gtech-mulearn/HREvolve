@@ -183,13 +183,13 @@ export default function GalleryGrid({ isAdmin, images }: { isAdmin: boolean; ima
 
       {isAdmin && selected.size > 0 && (
         <div
-          className="flex items-center justify-between gap-3 mb-4 px-4 py-3 rounded-xl border"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 px-4 py-3 rounded-xl border"
           style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-custom)' }}
         >
           <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
             {selected.size} selected
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {hasPendingSelected && (
               <button
                 onClick={() => setBulkAction('approve')}

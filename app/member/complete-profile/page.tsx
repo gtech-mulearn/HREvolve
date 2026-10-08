@@ -27,7 +27,8 @@ export default function CompleteProfilePage() {
     experience: '',
     linkedinUrl: '',
     expertise: '',
-    interests: ''
+    interests: '',
+    city: ''
   })
   
   const [isLoading, setIsLoading] = useState(false)
@@ -70,7 +71,8 @@ export default function CompleteProfilePage() {
               experience: data.user.experience || '',
               linkedinUrl: data.user.linkedinUrl || '',
               expertise: data.user.expertise || '',
-              interests: data.user.interests || ''
+              interests: data.user.interests || '',
+              city: data.user.city || ''
             })
           }
         }
@@ -338,6 +340,29 @@ export default function CompleteProfilePage() {
                     color: 'var(--text-primary)'
                   }}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="city" className="block text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  Location *
+                </label>
+                <select
+                  id="city"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:ring-2 focus:ring-offset-2 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                  style={{
+                    backgroundColor: 'var(--bg-primary)',
+                    borderColor: 'var(--border-custom)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  <option value="">Select your location</option>
+                  <option value="TRIVANDRUM">Trivandrum</option>
+                  <option value="KOCHI">Kochi</option>
+                </select>
               </div>
 
               <div className="space-y-2">

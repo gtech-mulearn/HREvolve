@@ -28,3 +28,14 @@ export async function ensureGalleryImagesBucket() {
     throw error
   }
 }
+
+export const SPONSOR_LOGOS_BUCKET = 'sponsor-logos'
+
+export async function ensureSponsorLogosBucket() {
+  const { error } = await supabaseAdmin.storage.createBucket(SPONSOR_LOGOS_BUCKET, {
+    public: true,
+  })
+  if (error && !error.message.includes('already exists')) {
+    throw error
+  }
+}

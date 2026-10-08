@@ -153,6 +153,17 @@ export default function Dashboard() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-6 sm:py-12 sm:px-6 lg:px-8">
+        <Link
+          href="/"
+          className="inline-flex items-center transition-colors duration-200 mb-6 sm:mb-8 hover:opacity-80 text-sm sm:text-base"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+          Back to Home
+        </Link>
+
         {/* Welcome Section */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl mb-4 sm:mb-6 shadow-lg" style={{ backgroundColor: isDark ? '#ffffff' : '#000000' }}>

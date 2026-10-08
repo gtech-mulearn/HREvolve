@@ -41,6 +41,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     linkedinUrl,
     registrationUrl,
     isPublished,
+    isFlagship,
   } = body
 
   if (city !== undefined && city !== null && city !== '' && city !== 'TRIVANDRUM' && city !== 'KOCHI') {
@@ -61,6 +62,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       ...(linkedinUrl !== undefined && { linkedinUrl }),
       ...(registrationUrl !== undefined && { registrationUrl }),
       ...(isPublished !== undefined && { isPublished: !!isPublished }),
+      ...(isFlagship !== undefined && { isFlagship: !!isFlagship }),
     },
   })
 

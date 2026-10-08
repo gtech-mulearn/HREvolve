@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
     linkedinUrl,
     registrationUrl,
     isPublished,
+    isFlagship,
   } = body
 
   if (!title || !date) {
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
       linkedinUrl: linkedinUrl || null,
       registrationUrl: registrationUrl || null,
       isPublished: !!isPublished,
+      isFlagship: !!isFlagship,
       createdById: session.user.id,
     },
   })

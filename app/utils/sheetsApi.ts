@@ -11,6 +11,7 @@ export interface ProgramData {
   category: string;
   status: string;
   registration_url?: string;
+  is_flagship: boolean;
 }
 
 export interface ProcessedPrograms {
@@ -30,6 +31,7 @@ interface ApiEvent {
   category: string | null;
   linkedinUrl: string | null;
   registrationUrl: string | null;
+  isFlagship: boolean;
 }
 
 export async function fetchPublishedEvents(): Promise<ProcessedPrograms> {
@@ -60,6 +62,7 @@ export async function fetchPublishedEvents(): Promise<ProcessedPrograms> {
       category: event.category || '',
       status: '',
       registration_url: event.registrationUrl || undefined,
+      is_flagship: !!event.isFlagship,
     };
 
     const eventDate = new Date(program.date + 'T00:00:00');

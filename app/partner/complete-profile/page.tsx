@@ -34,7 +34,8 @@ export default function CompletePartnerProfilePage() {
     businessDescription: '',
     expectedBenefits: '',
     previousPartnerships: '',
-    additionalInfo: ''
+    additionalInfo: '',
+    city: ''
   })
   
   const [isLoading, setIsLoading] = useState(false)
@@ -98,7 +99,8 @@ export default function CompletePartnerProfilePage() {
               businessDescription: data.partner.businessDescription || '',
               expectedBenefits: data.partner.expectedBenefits || '',
               previousPartnerships: data.partner.previousPartnerships || '',
-              additionalInfo: data.partner.additionalInfo || ''
+              additionalInfo: data.partner.additionalInfo || '',
+              city: data.user?.city || ''
             })
           }
         }
@@ -559,12 +561,35 @@ export default function CompletePartnerProfilePage() {
                     required
                     placeholder="+1 (555) 123-4567"
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:ring-2 focus:ring-offset-2 focus:border-transparent transition-all duration-200 placeholder-gray-500 text-sm sm:text-base"
-                    style={{ 
-                      backgroundColor: 'var(--bg-primary)', 
+                    style={{
+                      backgroundColor: 'var(--bg-primary)',
                       borderColor: 'var(--border-custom)',
                       color: 'var(--text-primary)'
                     }}
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="city" className="block text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                    Your Location *
+                  </label>
+                  <select
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:ring-2 focus:ring-offset-2 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                    style={{
+                      backgroundColor: 'var(--bg-primary)',
+                      borderColor: 'var(--border-custom)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    <option value="">Select your location</option>
+                    <option value="TRIVANDRUM">Trivandrum</option>
+                    <option value="KOCHI">Kochi</option>
+                  </select>
                 </div>
               </div>
             </div>

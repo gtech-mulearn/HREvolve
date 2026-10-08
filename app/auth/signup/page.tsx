@@ -13,7 +13,8 @@ export default function SignUp() {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    city: ''
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -45,6 +46,12 @@ export default function SignUp() {
       return
     }
 
+    if (!formData.city) {
+      setError('Please select your location')
+      setIsLoading(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -54,7 +61,8 @@ export default function SignUp() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          city: formData.city
         }),
       })
 
@@ -179,6 +187,28 @@ export default function SignUp() {
                     value={formData.email}
                     onChange={handleChange}
                   />
+                </div>
+                <div>
+                  <label htmlFor="city" className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                    Location
+                  </label>
+                  <select
+                    id="city"
+                    name="city"
+                    required
+                    className="appearance-none relative block w-full px-4 py-3 border-2 rounded-2xl focus:outline-none focus:ring-4 focus:ring-opacity-20 focus:z-10 text-base transition-all duration-300 hover:border-opacity-60"
+                    style={{
+                      backgroundColor: 'var(--bg-primary)',
+                      borderColor: 'var(--border-custom)',
+                      color: 'var(--text-primary)'
+                    }}
+                    value={formData.city}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select your location</option>
+                    <option value="TRIVANDRUM">Trivandrum</option>
+                    <option value="KOCHI">Kochi</option>
+                  </select>
                 </div>
                 <div>
                   <label htmlFor="password" className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>

@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth'
 import ThemeToggle from '../theme-toggle'
 import AdminNav from './_components/AdminNav'
 import AdminUserMenu from './_components/AdminUserMenu'
+import MobileAdminMenu from './_components/MobileAdminMenu'
 import { ToastProvider } from './_components/Toast'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -39,13 +40,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                     HR Evolve
                   </span>
                 </Link>
-                <div className="h-6 w-px hidden sm:block" style={{ backgroundColor: 'var(--border-custom)' }} />
+                <div className="h-6 w-px hidden md:block" style={{ backgroundColor: 'var(--border-custom)' }} />
                 <AdminNav isAdmin={isAdmin} />
               </div>
 
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                 <AdminUserMenu name={session.user.name} email={session.user.email} role={session.user.role!} />
                 <ThemeToggle />
+                <MobileAdminMenu
+                  isAdmin={isAdmin}
+                  name={session.user.name}
+                  email={session.user.email}
+                  role={session.user.role!}
+                />
               </div>
             </div>
           </div>

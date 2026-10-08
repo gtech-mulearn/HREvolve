@@ -57,11 +57,13 @@ model User {
   linkedinUrl      String?
   organization     String?
   profileCompleted Boolean   @default(false)
+  city             City?
   accounts         Account[]
   sessions         Session[]
   partner          Partner?
   events           Event[]
   galleryImages    GalleryImage[]
+  sponsors         Sponsor[]
 }
 
 model Partner {
@@ -124,6 +126,8 @@ model Event {
   linkedinUrl     String?
   registrationUrl String?
   isPublished     Boolean   @default(false)
+  isFlagship      Boolean   @default(false)
+  reminderSentAt  DateTime?
   createdById     String?
   createdBy       User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
   createdAt       DateTime  @default(now())
@@ -145,6 +149,30 @@ model GalleryImage {
   updatedAt   DateTime @updatedAt
 
   @@index([isPublished, createdAt])
+}
+
+model Sponsor {
+  id          String   @id @default(cuid())
+  name        String?
+  logoUrl     String
+  path        String
+  websiteUrl  String?
+  createdById String?
+  createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  months      SponsorMonth[]
+}
+
+model SponsorMonth {
+  id        String   @id @default(cuid())
+  sponsorId String
+  sponsor   Sponsor  @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+  month     Int
+  year      Int
+  createdAt DateTime @default(now())
+
+  @@unique([sponsorId, month, year])
+  @@index([year, month])
 }
 
 model ContactForm {

@@ -6,12 +6,19 @@ import { sendVerificationEmail } from '../../../../lib/email-service'
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password, department, position } = await request.json()
+    const { name, email, password, department, position, city } = await request.json()
 
     // Validate required fields
     if (!name || !email || !password) {
       return NextResponse.json(
         { message: 'Name, email and password are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!city || (city !== 'TRIVANDRUM' && city !== 'KOCHI')) {
+      return NextResponse.json(
+        { message: 'Please select a valid location' },
         { status: 400 }
       )
     }
@@ -76,6 +83,7 @@ export async function POST(request: NextRequest) {
           password: hashedPassword,
           department,
           position,
+          city,
           isActive: false, // Account is inactive until email is verified
         }
       })
@@ -105,6 +113,7 @@ export async function POST(request: NextRequest) {
           password: hashedPassword,
           department,
           position,
+          city,
           isActive: true, // Account is immediately active
           emailVerified: new Date(), // Mark as verified
         }

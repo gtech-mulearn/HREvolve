@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import ThemeToggle from './theme-toggle'
 import ProgramsSection from './components/ProgramsSection'
+import SponsorSlider from './components/SponsorSlider'
 import UserButton from '../components/UserButton'
 import { useSession, signIn } from 'next-auth/react'
 
@@ -286,6 +287,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <SponsorSlider />
 
       {/* About Section */}
       <section id="about" className="pt-20 sm:pt-24 md:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 md:px-8 lg:px-12 bg-primary text-primary transition-colors duration-300">

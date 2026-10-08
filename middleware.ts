@@ -46,7 +46,9 @@ export default withAuth(
             req.nextUrl.pathname.startsWith('/gallery') ||
             req.nextUrl.pathname.startsWith('/api/auth') ||
             req.nextUrl.pathname.startsWith('/api/events') ||
-            req.nextUrl.pathname.startsWith('/api/gallery')) {
+            req.nextUrl.pathname.startsWith('/api/gallery') ||
+            req.nextUrl.pathname.startsWith('/api/sponsors') ||
+            req.nextUrl.pathname.startsWith('/api/cron')) {
           return true
         }
         
