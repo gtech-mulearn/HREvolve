@@ -7,6 +7,7 @@ import { useTheme } from '../../theme-provider'
 import ThemeToggle from '../../theme-toggle'
 import Link from 'next/link'
 import Image from 'next/image'
+import { CITIES } from '@/lib/cities'
 
 export default function CompleteProfilePage() {
   const { data: session, status } = useSession()
@@ -40,11 +41,9 @@ export default function CompleteProfilePage() {
     const fetchProfileData = async () => {
       if (!session?.user?.email) return
 
-      console.log('Member Profile: User session:', session.user) // Debug log
 
       // If user is a partner, redirect to partner profile
       if (session.user?.userType === 'PARTNER') {
-        console.log('Member Profile: Redirecting partner to partner profile') // Debug log
         router.push('/partner/complete-profile')
         return
       }
@@ -60,7 +59,6 @@ export default function CompleteProfilePage() {
         if (response.ok) {
           const data = await response.json()
           if (data.user) {
-            console.log('Member Profile: Fetched user data:', data.user) // Debug log
             
             setFormData({
               name: data.user.name || '',
@@ -115,7 +113,6 @@ export default function CompleteProfilePage() {
     setError('')
     setSuccess('')
 
-    console.log('Submitting form data:', formData) // Debug log
 
     try {
       const response = await fetch('/api/member/complete-profile', {
@@ -127,7 +124,6 @@ export default function CompleteProfilePage() {
       })
 
       const data = await response.json()
-      console.log('API response:', data) // Debug log
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to update profile')
@@ -182,7 +178,7 @@ export default function CompleteProfilePage() {
           <div className="flex justify-between items-center py-3 sm:py-4">
             <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
               <Image
-                src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+                src="/logo.png"
                 alt="HR Evolve Logo"
                 width={40}
                 height={40}
@@ -360,8 +356,9 @@ export default function CompleteProfilePage() {
                   }}
                 >
                   <option value="">Select your location</option>
-                  <option value="TRIVANDRUM">Trivandrum</option>
-                  <option value="KOCHI">Kochi</option>
+                  {CITIES.map((c) => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
                 </select>
               </div>
 

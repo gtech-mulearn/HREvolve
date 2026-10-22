@@ -145,7 +145,7 @@ export default async function AdminDashboardPage() {
                     {event.title}
                   </p>
                   <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {new Date(event.date).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
                 </div>
                 <StatusBadge isPublished={event.isPublished} />

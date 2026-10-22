@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
+import { isValidCity } from '@/lib/cities'
 
 export async function GET(request: NextRequest) {
   const { session, error, status } = await requireAdminSession(['ADMIN', 'HOST'])
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
   const where: any = {}
   if (isPublishedParam === 'true') where.isPublished = true
   if (isPublishedParam === 'false') where.isPublished = false
-  if (cityParam === 'TRIVANDRUM' || cityParam === 'KOCHI') where.city = cityParam
+  if (isValidCity(cityParam)) where.city = cityParam
 
   const events = await prisma.event.findMany({
     where,
@@ -45,14 +46,15 @@ export async function POST(request: NextRequest) {
     registrationUrl,
     isPublished,
     isFlagship,
+    highlight,
   } = body
 
   if (!title || !date) {
     return NextResponse.json({ error: 'title and date are required' }, { status: 400 })
   }
 
-  if (city && city !== 'TRIVANDRUM' && city !== 'KOCHI') {
-    return NextResponse.json({ error: 'city must be TRIVANDRUM or KOCHI' }, { status: 400 })
+  if (city && !isValidCity(city)) {
+    return NextResponse.json({ error: 'Invalid city' }, { status: 400 })
   }
 
   const event = await prisma.event.create({
@@ -69,6 +71,7 @@ export async function POST(request: NextRequest) {
       registrationUrl: registrationUrl || null,
       isPublished: !!isPublished,
       isFlagship: !!isFlagship,
+      highlight: highlight?.trim() || null,
       createdById: session.user.id,
     },
   })

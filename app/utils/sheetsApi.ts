@@ -12,6 +12,7 @@ export interface ProgramData {
   status: string;
   registration_url?: string;
   is_flagship: boolean;
+  highlight: string;
 }
 
 export interface ProcessedPrograms {
@@ -32,9 +33,35 @@ interface ApiEvent {
   linkedinUrl: string | null;
   registrationUrl: string | null;
   isFlagship: boolean;
+  highlight: string | null;
 }
 
-export async function fetchPublishedEvents(): Promise<ProcessedPrograms> {
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+// Event dates are stored as UTC midnight of the intended calendar day, so they are
+// compared as YYYY-MM-DD strings against today's date in IST (the audience's timezone),
+// independent of the visitor's own timezone. Matches the chapter pages and the cron.
+export function todayIst(): string {
+  return new Date(Date.now() + IST_OFFSET_MS).toISOString().split('T')[0];
+}
+
+// The homepage renders several sections from the same event list; share one request
+// per page load instead of fetching /api/events once per component.
+const EVENTS_REUSE_MS = 60 * 1000;
+let eventsRequest: { promise: Promise<ProcessedPrograms>; startedAt: number } | null = null;
+
+export function fetchPublishedEvents(): Promise<ProcessedPrograms> {
+  if (!eventsRequest || Date.now() - eventsRequest.startedAt > EVENTS_REUSE_MS) {
+    const promise = loadPublishedEvents().catch((error) => {
+      eventsRequest = null;
+      throw error;
+    });
+    eventsRequest = { promise, startedAt: Date.now() };
+  }
+  return eventsRequest.promise;
+}
+
+async function loadPublishedEvents(): Promise<ProcessedPrograms> {
   const response = await fetch('/api/events', { cache: 'no-store' });
 
   if (!response.ok) {
@@ -43,8 +70,7 @@ export async function fetchPublishedEvents(): Promise<ProcessedPrograms> {
 
   const { events }: { events: ApiEvent[] } = await response.json();
 
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
+  const today = todayIst();
 
   const upcoming: ProgramData[] = [];
   const past: ProgramData[] = [];
@@ -63,20 +89,18 @@ export async function fetchPublishedEvents(): Promise<ProcessedPrograms> {
       status: '',
       registration_url: event.registrationUrl || undefined,
       is_flagship: !!event.isFlagship,
+      highlight: event.highlight || '',
     };
 
-    const eventDate = new Date(program.date + 'T00:00:00');
-    eventDate.setHours(0, 0, 0, 0);
-
-    if (eventDate >= currentDate) {
+    if (program.date >= today) {
       upcoming.push(program);
     } else {
       past.push(program);
     }
   });
 
-  upcoming.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  upcoming.sort((a, b) => a.date.localeCompare(b.date));
+  past.sort((a, b) => b.date.localeCompare(a.date));
 
   return { upcoming, past };
 }
@@ -85,7 +109,10 @@ export async function fetchPublishedEvents(): Promise<ProcessedPrograms> {
 export function formatDate(dateString: string): string {
   try {
     const date = new Date(dateString);
+    // Dates are UTC-midnight calendar days; format in UTC so visitors in negative-offset
+    // timezones don't see the previous day.
     return date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -98,10 +125,9 @@ export function formatDate(dateString: string): string {
 // Helper function to check if event is happening soon (within 7 days)
 export function isEventSoon(dateString: string): boolean {
   try {
-    const eventDate = new Date(dateString);
-    const currentDate = new Date();
-    const diffTime = eventDate.getTime() - currentDate.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const eventDate = new Date(dateString.split('T')[0] + 'T00:00:00Z');
+    const currentDate = new Date(todayIst() + 'T00:00:00Z');
+    const diffDays = Math.round((eventDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
     return diffDays <= 7 && diffDays >= 0;
   } catch (error) {
     return false;
@@ -182,7 +208,10 @@ export function getFallbackImageUrl(): string {
   return '/logo.png'; // Use the logo as fallback, or you can use a placeholder image
 }
 
-export const CITY_LABELS: Record<string, string> = {
-  TRIVANDRUM: 'Trivandrum',
-  KOCHI: 'Kochi',
-};
+export { CITY_LABELS } from '@/lib/cities';
+
+// Where clicking an event card goes: its LinkedIn post, or failing that its own
+// site/registration page (e.g. an Elevate edition's microsite).
+export function getEventLink(program: ProgramData): string {
+  return program.linkedin_url || program.registration_url || '';
+}

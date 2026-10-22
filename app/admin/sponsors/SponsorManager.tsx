@@ -15,6 +15,7 @@ import {
 import ConfirmDialog from '../_components/ConfirmDialog'
 import EmptyState from '../_components/EmptyState'
 import { useToast } from '../_components/Toast'
+import { CITIES, CITY_LABELS, type CityValue } from '@/lib/cities'
 
 interface SponsorRow {
   id: string
@@ -22,6 +23,7 @@ interface SponsorRow {
   logoUrl: string
   path: string
   websiteUrl: string | null
+  city: string | null
   createdAt: string
   months: { month: number; year: number }[]
 }
@@ -37,6 +39,14 @@ function currentYearMonth() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 }
 
+// 'MAIN' = homepage sponsors (stored with city = null)
+type SponsorScope = 'MAIN' | CityValue
+
+const SCOPES: { value: SponsorScope; label: string }[] = [
+  { value: 'MAIN', label: 'Main page' },
+  ...CITIES.map((c) => ({ value: c.value, label: c.label })),
+]
+
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
@@ -47,6 +57,7 @@ export default function SponsorManager({ sponsors }: { sponsors: SponsorRow[] })
   const { show } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [scope, setScope] = useState<SponsorScope>('MAIN')
   const [selectedMonth, setSelectedMonth] = useState(currentYearMonth())
   const [dragging, setDragging] = useState(false)
   const [queue, setQueue] = useState<QueueItem[]>([])
@@ -57,6 +68,9 @@ export default function SponsorManager({ sponsors }: { sponsors: SponsorRow[] })
     const [y, m] = selectedMonth.split('-').map(Number)
     return [y, m]
   }, [selectedMonth])
+
+  const visibleSponsors = sponsors.filter((sponsor) => (sponsor.city ?? 'MAIN') === scope)
+  const scopeLabel = scope === 'MAIN' ? 'the homepage' : `the ${CITY_LABELS[scope]} chapter page`
 
   const isAssigned = (sponsor: SponsorRow) =>
     sponsor.months.some((a) => a.month === month && a.year === year)
@@ -90,6 +104,7 @@ export default function SponsorManager({ sponsors }: { sponsors: SponsorRow[] })
       files.forEach((file) => formData.append('files', file))
       formData.append('month', String(month))
       formData.append('year', String(year))
+      if (scope !== 'MAIN') formData.append('city', scope)
 
       const res = await fetch('/api/admin/sponsors', {
         method: 'POST',
@@ -176,6 +191,26 @@ export default function SponsorManager({ sponsors }: { sponsors: SponsorRow[] })
 
   return (
     <div>
+      <div className="flex flex-wrap gap-2 mb-5">
+        {SCOPES.map((s) => (
+          <button
+            key={s.value}
+            onClick={() => setScope(s.value)}
+            className="px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors duration-150"
+            style={
+              scope === s.value
+                ? { backgroundColor: 'var(--accent-color)', borderColor: 'var(--accent-color)' }
+                : { color: 'var(--text-secondary)', borderColor: 'var(--border-custom)' }
+            }
+          >
+            <span style={scope === s.value ? { color: 'var(--bg-primary)' } : undefined}>
+              {s.label}{' '}
+              <span className="opacity-60">({sponsors.filter((sp) => (sp.city ?? 'MAIN') === s.value).length})</span>
+            </span>
+          </button>
+        ))}
+      </div>
+
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
           Showing checklist for:
@@ -241,7 +276,7 @@ export default function SponsorManager({ sponsors }: { sponsors: SponsorRow[] })
           Click or drag logos here to upload
         </p>
         <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-          New logos are added straight to the selected month &middot; PNG, JPG up to 5MB each
+          New logos are added to {scopeLabel} for the selected month &middot; PNG, JPG up to 5MB each
         </p>
         <input
           ref={fileInputRef}
@@ -277,18 +312,18 @@ export default function SponsorManager({ sponsors }: { sponsors: SponsorRow[] })
         </div>
       )}
 
-      {sponsors.length === 0 ? (
+      {visibleSponsors.length === 0 ? (
         <EmptyState
           icon={<BuildingOffice2Icon className="w-7 h-7" style={{ color: 'var(--text-secondary)' }} />}
           title="No sponsors yet"
-          description="Upload your first sponsor logos to start building the monthly checklist."
+          description={`Upload sponsor logos for ${scopeLabel} to start building the monthly checklist.`}
         />
       ) : (
         <div
           className="rounded-2xl border shadow-sm overflow-hidden"
           style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-custom)' }}
         >
-          {sponsors.map((sponsor, i) => {
+          {visibleSponsors.map((sponsor, i) => {
             const assigned = isAssigned(sponsor)
             return (
               <div

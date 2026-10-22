@@ -11,6 +11,7 @@ import {
   TagIcon,
 } from '@heroicons/react/24/outline'
 import { useToast } from '../_components/Toast'
+import { CITIES } from '@/lib/cities'
 
 interface EventFormData {
   id?: string
@@ -26,6 +27,7 @@ interface EventFormData {
   registrationUrl: string
   isPublished: boolean
   isFlagship: boolean
+  highlight: string
 }
 
 const emptyForm: EventFormData = {
@@ -41,6 +43,7 @@ const emptyForm: EventFormData = {
   registrationUrl: '',
   isPublished: false,
   isFlagship: false,
+  highlight: '',
 }
 
 const inputStyle = {
@@ -211,8 +214,9 @@ export default function EventForm({ initialData }: { initialData?: EventFormData
                   style={inputStyle}
                 >
                   <option value="">Not set</option>
-                  <option value="TRIVANDRUM">Trivandrum</option>
-                  <option value="KOCHI">Kochi</option>
+                  {CITIES.map((c) => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
                 </select>
               </Field>
             </div>
@@ -380,7 +384,7 @@ export default function EventForm({ initialData }: { initialData?: EventFormData
                 </p>
                 <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                   {form.isFlagship
-                    ? 'Yes — shown under the Flagship Program tab'
+                    ? 'Yes — shown under the Flagship · Elevate tab'
                     : 'No — shown under the Monthly Programs tab'}
                 </p>
               </div>
@@ -394,6 +398,21 @@ export default function EventForm({ initialData }: { initialData?: EventFormData
                 />
               </span>
             </button>
+            {form.isFlagship && (
+              <div className="mt-3">
+                <Field label="Highlight (shown as a badge on the card)">
+                  <input
+                    type="text"
+                    maxLength={60}
+                    placeholder="e.g. First ever in Kochi"
+                    value={form.highlight}
+                    onChange={(e) => handleChange('highlight', e.target.value)}
+                    className={inputClass}
+                    style={inputStyle}
+                  />
+                </Field>
+              </div>
+            )}
           </Section>
         </div>
       </div>

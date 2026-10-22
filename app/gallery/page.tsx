@@ -1,11 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { AnimatePresence, motion } from 'framer-motion'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import ThemeToggle from '../theme-toggle'
+import SiteHeader from '@/components/SiteHeader'
 
 interface GalleryImage {
   id: string
@@ -37,43 +35,18 @@ export default function GalleryPage() {
     }
 
     loadImages()
-
-    // @ts-ignore
-    window.toggleMenu = function () {
-      const mobileNav = document.querySelector('.mobile-nav')
-      // @ts-ignore
-      if (mobileNav && window.gsap) {
-        const isOpen = (mobileNav as HTMLElement).style.right === '0%' || (mobileNav as HTMLElement).style.right === '0px'
-        // @ts-ignore
-        window.gsap.to(mobileNav, { right: isOpen ? '-100%' : '0%', duration: 0.1 })
-      }
-    }
-
-    document.querySelectorAll('.mobile-nav ul li a').forEach((link) => {
-      link.addEventListener('click', () => {
-        const mobileNav = document.querySelector('.mobile-nav')
-        // @ts-ignore
-        if (mobileNav && window.gsap) {
-          // @ts-ignore
-          window.gsap.to(mobileNav, { right: '-100%', duration: 0.1 })
-        }
-      })
-    })
-
-    const header = document.querySelector('header')
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        header?.classList.add('header-scrolled')
-      } else {
-        header?.classList.remove('header-scrolled')
-      }
-    }
-    window.addEventListener('scroll', handleScroll)
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
   }, [])
+
+  // Fade the lightbox in after it mounts (CSS transition instead of framer-motion)
+  const [lightboxVisible, setLightboxVisible] = useState(false)
+  useEffect(() => {
+    if (!lightboxImage) {
+      setLightboxVisible(false)
+      return
+    }
+    const frame = requestAnimationFrame(() => setLightboxVisible(true))
+    return () => cancelAnimationFrame(frame)
+  }, [lightboxImage])
 
   useEffect(() => {
     if (!lightboxImage) return
@@ -86,108 +59,7 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Header section */}
-      <header className="fixed top-0 left-0 right-0 z-[1000] bg-transparent transition-all duration-300 ease-out">
-        <div className="container mx-auto px-6 py-5 md:px-8">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
-                alt="HR Evolve Logo"
-                className="h-12 w-auto keep-colors"
-                width={50}
-                height={50}
-              />
-            </Link>
-            <nav className="hidden md:flex items-center space-x-10">
-              <Link href="/#about" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
-                About
-              </Link>
-              <Link href="/#programs" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
-                Programs
-              </Link>
-              <Link href="/gallery" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
-                Gallery
-              </Link>
-              <Link href="/#contact" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
-                Contact
-              </Link>
-              <div className="ml-2">
-                <ThemeToggle />
-              </div>
-            </nav>
-            <div className="flex items-center md:hidden">
-              <ThemeToggle />
-              <svg
-                className="ml-4 hamburger-menu cursor-pointer transition-all duration-300"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                onClick={() => {
-                  // @ts-ignore
-                  if (typeof window !== 'undefined' && window.toggleMenu) {
-                    // @ts-ignore
-                    window.toggleMenu()
-                  }
-                }}
-              >
-                <rect x="2" y="5" width="20" height="3" fill="currentColor" />
-                <rect x="2" y="11" width="20" height="3" fill="currentColor" />
-                <rect x="2" y="17" width="20" height="3" fill="currentColor" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Navigation */}
-      <nav className="mobile-nav fixed top-0 right-[-100%] w-64 h-full z-[1001] p-6 shadow-custom transition-all duration-100 ease-out" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        <svg
-          className="text-muted float-right text-[28px] font-bold transition-colors duration-300 ease-out hover:text-primary focus:text-primary cursor-pointer"
-          width="36"
-          height="36"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          onClick={() => {
-            // @ts-ignore
-            if (typeof window !== 'undefined' && window.toggleMenu) {
-              // @ts-ignore
-              window.toggleMenu()
-            }
-          }}
-        >
-          <line x1="4.5" y1="4.5" x2="19.5" y2="19.5" stroke="currentColor" strokeWidth="4" />
-          <line x1="4.5" y1="19.5" x2="19.5" y2="4.5" stroke="currentColor" strokeWidth="4" />
-        </svg>
-        <ul className="list-none p-0 mt-16">
-          <li className="mb-4">
-            <Link href="/#about" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-              About
-            </Link>
-          </li>
-          <li className="mb-4">
-            <Link href="/#programs" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-              Programs
-            </Link>
-          </li>
-          <li className="mb-4">
-            <Link href="/gallery" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-              Gallery
-            </Link>
-          </li>
-          <li className="mb-4">
-            <Link href="/#contact" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-              Contact
-            </Link>
-          </li>
-        </ul>
-        <div className="p-5 border-t" style={{ borderColor: 'var(--border-custom)' }}>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <SiteHeader />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-28 sm:py-32">
         {/* Page Header */}
@@ -247,7 +119,7 @@ export default function GalleryPage() {
                 onClick={() => setLightboxImage(image)}
                 className="relative w-full mb-4 block break-inside-avoid rounded-xl overflow-hidden group shadow-soft hover:shadow-strong transition-shadow duration-300"
               >
-                <img src={image.url} alt={image.caption || ''} className="w-full h-auto block transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                <img src={image.url} alt={image.caption || ''} className="w-full h-auto block transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                   {image.caption && (
                     <p className="text-white text-sm font-medium text-left">{image.caption}</p>
@@ -260,38 +132,31 @@ export default function GalleryPage() {
       </div>
 
       {/* Lightbox */}
-      <AnimatePresence>
-        {lightboxImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8"
+      {lightboxImage && (
+        <div
+          className={`fixed inset-0 z-[2000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8 transition-opacity duration-200 ${lightboxVisible ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setLightboxImage(null)}
+        >
+          <button
             onClick={() => setLightboxImage(null)}
+            aria-label="Close"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200"
           >
-            <button
-              onClick={() => setLightboxImage(null)}
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200"
-            >
-              <XMarkIcon className="w-6 h-6 text-white" />
-            </button>
-            <motion.img
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              src={lightboxImage.url}
-              alt={lightboxImage.caption || ''}
-              className="max-w-full max-h-full object-contain rounded-lg"
-              onClick={(e) => e.stopPropagation()}
-            />
-            {lightboxImage.caption && (
-              <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white text-sm font-medium px-4 text-center">
-                {lightboxImage.caption}
-              </p>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <XMarkIcon className="w-6 h-6 text-white" />
+          </button>
+          <img
+            src={lightboxImage.url}
+            alt={lightboxImage.caption || ''}
+            className={`max-w-full max-h-full object-contain rounded-lg transition-transform duration-200 ${lightboxVisible ? 'scale-100' : 'scale-95'}`}
+            onClick={(e) => e.stopPropagation()}
+          />
+          {lightboxImage.caption && (
+            <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white text-sm font-medium px-4 text-center">
+              {lightboxImage.caption}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

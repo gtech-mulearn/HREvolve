@@ -45,8 +45,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: 'No events today without a reminder sent', events: [] })
   }
 
+  // Skip email/password signups that never verified their address. Google sign-ins
+  // are never marked isActive (that flag is set by our email verification flow), but
+  // their address is verified by Google, so users with a linked OAuth account count too.
   const recipients = await prisma.user.findMany({
-    where: { email: { not: null } },
+    where: {
+      email: { not: null },
+      OR: [{ isActive: true }, { emailVerified: { not: null } }, { accounts: { some: {} } }],
+    },
     select: { email: true },
   })
   const recipientEmails = recipients.map((u) => u.email).filter((e): e is string => !!e)

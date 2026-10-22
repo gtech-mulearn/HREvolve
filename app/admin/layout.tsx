@@ -30,7 +30,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <div className="flex items-center gap-3 sm:gap-6 min-w-0">
                 <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
                   <Image
-                    src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+                    src="/logo.png"
                     alt="HR Evolve Logo"
                     width={34}
                     height={34}

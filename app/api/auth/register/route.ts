@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '../../../../lib/prisma'
 import { normalizeEmail, isValidEmail, generateVerificationToken } from '../../../../lib/email-utils'
 import { sendVerificationEmail } from '../../../../lib/email-service'
+import { isValidCity } from '@/lib/cities'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!city || (city !== 'TRIVANDRUM' && city !== 'KOCHI')) {
+    if (!isValidCity(city)) {
       return NextResponse.json(
         { message: 'Please select a valid location' },
         { status: 400 }

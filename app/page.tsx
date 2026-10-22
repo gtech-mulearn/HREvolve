@@ -1,288 +1,65 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import ThemeToggle from './theme-toggle'
 import ProgramsSection from './components/ProgramsSection'
 import SponsorSlider from './components/SponsorSlider'
-import UserButton from '../components/UserButton'
+import ElevateSection from './components/ElevateSection'
+import HeroSlideshow from './components/HeroSlideshow'
+import SiteHeader from '@/components/SiteHeader'
+import { EnvelopeIcon, PhoneIcon, MapMarkerIcon, LinkedinIcon, InstagramIcon } from '@/components/icons'
 import { useSession, signIn } from 'next-auth/react'
+import Link from 'next/link'
+import { CITIES } from '@/lib/cities'
+import { ELEVATE_CURRENT } from '@/lib/elevate'
 
 export default function Home() {
   const { data: session } = useSession()
   const router = useRouter()
 
-  useEffect(() => {
-    // Modal functionality
-    const modal = document.getElementById("registerModal")
-    const span = document.getElementsByClassName("close-btn")[0] as HTMLElement
-
-    if (span) {
-      span.onclick = function () {
-        if (modal) modal.style.display = "none"
-      }
-    }
-
-    window.onclick = function (event: Event) {
-      if (event.target == modal) {
-        if (modal) modal.style.display = "none"
-      }
-    }
-
-    // Slideshow functionality
-    const slides = document.querySelectorAll(".slide")
-    let currentIndex = 0
-
-    function showSlide(index: number) {
-      const offset = -index * 100
-      const slidesContainer = document.querySelector(".slides") as HTMLElement
-      if (slidesContainer) {
-        slidesContainer.style.transform = `translateX(${offset}%)`
-      }
-    }
-
-    function nextSlide() {
-      currentIndex = (currentIndex + 1) % slides.length
-      showSlide(currentIndex)
-    }
-
-    const slideInterval = setInterval(nextSlide, 3000)
-
-    // Mobile navigation
-    const mobileNav = document.querySelector(".mobile-nav")
-    let isMenuOpen = false
-
-    // @ts-ignore
-    window.toggleMenu = function() {
-      if (typeof window !== 'undefined' && window.gsap) {
-        if (isMenuOpen) {
-          window.gsap.to(mobileNav, { right: "-100%", duration: 0.1 })
-        } else {
-          window.gsap.to(mobileNav, { right: "0%", duration: 0.1 })
-        }
-        isMenuOpen = !isMenuOpen
-      }
-    }
-
-    // Close the mobile nav when a link is clicked
-    document.querySelectorAll(".mobile-nav ul li a").forEach((link) => {
-      link.addEventListener("click", () => {
-        if (typeof window !== 'undefined' && window.gsap) {
-          window.gsap.to(mobileNav, { right: "-100%", duration: 0.1 })
-          isMenuOpen = false
-        }
-      })
-    })
-
-    // Header scroll effect
-    const header = document.querySelector('header')
-    
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        header?.classList.add('header-scrolled')
-      } else {
-        header?.classList.remove('header-scrolled')
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    
-    // Call once on initial load to set correct state
-    handleScroll()
-
-    // Gallery carousel auto-scroll functionality
-    const galleryImages = document.querySelectorAll('.gallery img')
-    let galleryCurrentIndex = 0
-    // Responsive images per view based on screen size
-    const getImagesPerView = () => {
-      if (window.innerWidth <= 475) return 1.5 // Extra small mobile
-      if (window.innerWidth <= 640) return 2   // Mobile
-      if (window.innerWidth <= 768) return 2.5 // Large mobile
-      if (window.innerWidth <= 1024) return 3  // Tablet
-      return 4 // Desktop
-    }
-
-    function showGallerySlide(index: number) {
-      const gallery = document.querySelector('.gallery') as HTMLElement
-      if (gallery && galleryImages.length > 0) {
-        const imageWidth = galleryImages[0].clientWidth + (window.innerWidth <= 640 ? 12 : 16) // Image width + responsive gap
-        const offset = -index * imageWidth
-        gallery.style.transform = `translateX(${offset}px)`
-      }
-    }
-
-    function nextGallerySlide() {
-      const imagesPerView = getImagesPerView()
-      const maxIndex = Math.max(0, galleryImages.length - Math.floor(imagesPerView))
-      galleryCurrentIndex = galleryCurrentIndex >= maxIndex ? 0 : galleryCurrentIndex + 1
-      showGallerySlide(galleryCurrentIndex)
-    }
-
-    // Auto-scroll every 3 seconds
-    const galleryInterval = setInterval(nextGallerySlide, 3000)
-
-    return () => {
-      clearInterval(slideInterval)
-      clearInterval(galleryInterval)
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
-
   return (
     <div className="main-page">
-      {/* Modal */}
-      <div id="registerModal" className="hidden fixed z-[1000] left-0 top-0 w-full h-full overflow-auto bg-black bg-opacity-40">
-        <div className="bg-primary mx-auto mt-[15%] p-5 border border-custom w-1/2 text-center text-primary rounded-lg shadow-custom">
-          <span className="text-muted float-right text-[28px] font-bold transition-colors duration-300 ease-out hover:text-primary focus:text-primary cursor-pointer">&times;</span>
-          <h2 className="text-2xl font-bold mb-4">Welcome to HR Evolve</h2>
-          <p className="mb-6">
-            Join us for our upcoming events and be a part of our dynamic network
-            of HR professionals.
-          </p>
-          <a href="https://makemypass.com/elevate-2024" className="inline-block px-5 py-2.5 mt-5 bg-accent !text-white dark:!text-black no-underline rounded transition-colors duration-300 ease-out hover:bg-accent-hover">
-            Register Now
-          </a>
-        </div>
-      </div>
-
-      {/* Header section */}
-      <header className="fixed top-0 left-0 right-0 z-[1000] bg-transparent transition-all duration-300 ease-out">
-        <div className="container mx-auto px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-5 lg:px-12">
-          <div className="flex justify-between items-center">
-            <a href="#" className="flex items-center">
-              <Image
-                src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
-                alt="HR Evolve Logo"
-                className="h-8 sm:h-10 md:h-12 w-auto keep-colors"
-                width={50}
-                height={50}
-              />
-            </a>
-            <nav className="hidden md:flex items-center space-x-6 lg:space-x-10">
-              <a href="#about" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
-                About
-              </a>
-              <a href="/events" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
-                Programs
-              </a>
-              <a href="/gallery" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
-                Gallery
-              </a>
-              <a href="#contact" className="nav-link no-underline font-medium md:font-semibold text-sm md:text-base transition-all duration-300 hover:opacity-80">
-                Contact
-              </a>
-              <div className="flex items-center space-x-4 ml-2 lg:ml-4">
-                <UserButton />
-                <ThemeToggle />
-              </div>
-            </nav>
-            <div className="flex items-center md:hidden space-x-2">
-              <UserButton />
-              <ThemeToggle />
-              <svg
-                className="hamburger-menu cursor-pointer transition-all duration-300"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                onClick={() => {
-                  // @ts-ignore
-                  if (typeof window !== 'undefined' && window.toggleMenu) {
-                    // @ts-ignore
-                    window.toggleMenu()
-                  }
-                }}
-              >
-                <rect x="2" y="5" width="20" height="3" fill="currentColor" />
-                <rect x="2" y="11" width="20" height="3" fill="currentColor" />
-                <rect x="2" y="17" width="20" height="3" fill="currentColor" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Navigation */}
-      <nav className="mobile-nav fixed top-0 right-[-100%] w-72 sm:w-80 h-full bg-primary z-[1001] p-4 sm:p-6 shadow-custom transition-all duration-100 ease-out md:hidden">
-        <svg
-          className="text-muted float-right transition-colors duration-300 ease-out hover:text-primary focus:text-primary cursor-pointer"
-          width="28"
-          height="28"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          onClick={() => {
-            // @ts-ignore
-            if (typeof window !== 'undefined' && window.toggleMenu) {
-              // @ts-ignore
-              window.toggleMenu()
-            }
-          }}
-        >
-          <line
-            x1="4.5"
-            y1="4.5"
-            x2="19.5"
-            y2="19.5"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <line
-            x1="4.5"
-            y1="19.5"
-            x2="19.5"
-            y2="4.5"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-        </svg>
-        <ul className="list-none p-0 mt-12 sm:mt-16 space-y-2">
-          <li>
-            <a href="#about" className="block text-primary no-underline py-4 px-4 rounded-lg hover:bg-secondary transition-colors duration-300 text-lg font-medium">
-              About
-            </a>
-          </li>
-          <li>
-            <a href="#programs" className="block text-primary no-underline py-4 px-4 rounded-lg hover:bg-secondary transition-colors duration-300 text-lg font-medium">
-              Programs
-            </a>
-          </li>
-          <li>
-            <a href="/gallery" className="block text-primary no-underline py-4 px-4 rounded-lg hover:bg-secondary transition-colors duration-300 text-lg font-medium">
-              Gallery
-            </a>
-          </li>
-          <li>
-            <a href="#contact" className="block text-primary no-underline py-4 px-4 rounded-lg hover:bg-secondary transition-colors duration-300 text-lg font-medium">
-              Contact
-            </a>
-          </li>
-        </ul>
-        <div className="p-4 sm:p-5 mt-8 border-t border-custom">
-          <ThemeToggle />
-        </div>
-      </nav>
+      <SiteHeader />
 
       {/* Hero section */}
       <section className="relative h-screen min-h-[600px] overflow-hidden flex items-center justify-center">
-        <div className="slides absolute inset-0 flex transition-transform duration-500 ease-in-out">
-          <div className="slide flex-shrink-0 w-full h-full bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url("/s1.jpg")'}}></div>
-          <div className="slide flex-shrink-0 w-full h-full bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url("/s2.jpg")'}}></div>
-          <div className="slide flex-shrink-0 w-full h-full bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url("/s3.jpg")'}}></div>
-          <div className="slide flex-shrink-0 w-full h-full bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url("/s4.jpg")'}}></div>
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold mb-6 sm:mb-8 md:mb-12 text-white drop-shadow-2xl leading-tight tracking-tight">
-            Unlock big ideas shaping the future of Business
+        <HeroSlideshow images={['/s1.jpg', '/s2.jpg', '/s3.jpg', '/s4.jpg']} />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/75" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+          <a
+            href={ELEVATE_CURRENT.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 sm:mb-8 rounded-full border border-amber-300/60 bg-black/30 backdrop-blur-sm text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] !text-amber-200 transition-colors hover:bg-black/50"
+          >
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            {ELEVATE_CURRENT.name} · {ELEVATE_CURRENT.edition}
+          </a>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-6 sm:mb-8 text-white drop-shadow-2xl leading-[1.05] tracking-tight">
+            The future of work
+            <br />
+            takes the stage in{' '}
+            <span className="bg-gradient-to-r from-amber-300 via-orange-400 to-rose-400 bg-clip-text text-transparent">
+              Trivandrum
+            </span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-8 sm:mb-10 md:mb-12 text-white/95 drop-shadow-lg font-medium leading-relaxed max-w-5xl mx-auto px-2">
-            Connect, Inspire, Transform: HR Leading the Way
+          <p className="text-lg sm:text-xl md:text-2xl mb-10 sm:mb-12 text-white/90 drop-shadow-lg font-medium leading-relaxed max-w-3xl mx-auto px-2">
+            Bold ideas. Real stories. The people leaders shaping Kerala&apos;s workplaces - all in one room.
           </p>
-          <div className="text-center">
-            <a href="https://makemypass.com/event/elevate25-hr-conclave" className="inline-block px-6 sm:px-8 md:px-10 py-3 sm:py-4 bg-white !text-black no-underline rounded-xl text-base sm:text-lg font-bold transition-all duration-300 ease-out hover:bg-gray-100 hover:shadow-xl hover:-translate-y-1 shadow-2xl">
-              Registration Open
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <a
+              href={ELEVATE_CURRENT.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-7 sm:px-9 py-3.5 sm:py-4 rounded-xl text-base sm:text-lg font-bold bg-gradient-to-r from-amber-400 to-orange-500 !text-black no-underline shadow-2xl transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-orange-500/40"
+            >
+              Get your pass for {ELEVATE_CURRENT.name} →
+            </a>
+            <a
+              href="#about"
+              className="inline-block px-7 py-3.5 sm:py-4 rounded-xl text-base sm:text-lg font-semibold border border-white/60 !text-white no-underline transition-colors duration-300 hover:bg-white/10"
+            >
+              Discover HR Evolve
             </a>
           </div>
         </div>
@@ -294,7 +71,7 @@ export default function Home() {
       <section id="about" className="pt-20 sm:pt-24 md:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 md:px-8 lg:px-12 bg-primary text-primary transition-colors duration-300">
         <div className="container-width">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-8 sm:mb-10 md:mb-12 text-primary text-balance">About HR Evolve</h2>
-          <p className="text-base sm:text-lg md:text-xl leading-relaxed mb-6 sm:mb-8 text-secondary max-w-4xl mx-auto text-balance">
+          <p className="text-base sm:text-lg md:text-xl leading-relaxed mb-6 sm:mb-8 text-secondary max-w-4xl mx-auto text-justify hyphens-auto">
             Welcome to <strong>HR Evolve</strong>, a vibrant community for HR
             professionals and enthusiasts dedicated to reshaping the future of
             human resources. Our platform encourages collaboration and open
@@ -303,7 +80,7 @@ export default function Home() {
             learning, we empower our members to stay ahead in a rapidly changing
             landscape.
           </p>
-          <p className="text-base sm:text-lg leading-relaxed text-secondary max-w-4xl mx-auto">
+          <p className="text-base sm:text-lg leading-relaxed text-secondary max-w-4xl mx-auto text-justify hyphens-auto">
             Every <strong>third Thursday</strong>, we host interactive, expert-led
             sessions that tackle evolving HR challenges and opportunities. From
             leadership strategies to emerging technologies, we explore key topics
@@ -312,7 +89,7 @@ export default function Home() {
             changes, <strong>HR Evolve</strong> is here to help you grow and
             succeed. If you want to stay on top of the current HR tech trends and
             understand what companies in the region are doing for their people, HR
-            EVOLVE is the place to be! . Learn from industry thought leaders that
+            EVOLVE is the place to be! Learn from industry thought leaders that
             are revolutionizing work places, meet up with C level peers with
             similar challenges, foster deeper connections, find the right
             technology partner, forge lifelong partnerships, hear regional case
@@ -322,8 +99,41 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Chapters */}
+      <section id="chapters" className="py-16 sm:py-20 px-4 sm:px-6 md:px-8 lg:px-12 bg-secondary transition-colors duration-300">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 text-primary">Our Chapters</h2>
+          <p className="text-center text-secondary max-w-2xl mx-auto mb-10 sm:mb-12">
+            HR Evolve runs across three cities in Kerala. Meet each chapter&apos;s core team, events and sponsors.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+            {CITIES.map((city) => (
+              <Link
+                key={city.value}
+                href={`/chapters/${city.slug}`}
+                className="group relative h-64 sm:h-72 rounded-2xl overflow-hidden bg-cover bg-center shadow-custom"
+                style={{ backgroundImage: `url("${city.image}")` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10 transition-opacity duration-300 group-hover:opacity-90" />
+                <div className="relative z-10 h-full flex flex-col justify-end p-6">
+                  <span className="text-xs font-semibold uppercase tracking-[0.2em] !text-white/70 mb-1">Chapter</span>
+                  <span className="text-2xl sm:text-3xl font-bold !text-white mb-1">{city.label}</span>
+                  <span className="text-sm !text-white/80 mb-3">{city.tagline}</span>
+                  <span className="text-sm font-semibold !text-white transition-transform duration-300 group-hover:translate-x-1">
+                    Explore chapter →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Programs Section - Dynamic from Google Sheets */}
       <ProgramsSection />
+
+      {/* Flagship: Elevate */}
+      <ElevateSection />
 
       {/* Membership and Partnership Boxes - Only show if user is not signed in or hasn't completed profile */}
       {(!session || !session.user?.profileCompleted) && (
@@ -386,14 +196,14 @@ export default function Home() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl mb-8 sm:mb-10 md:mb-12 text-primary">Contact Us</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-8 sm:mb-12">
             <div className="flex flex-col items-center gap-3 sm:gap-4 p-4">
-              <i className="fas fa-envelope text-2xl sm:text-3xl text-primary"></i>
+              <EnvelopeIcon className="text-2xl sm:text-3xl text-primary" />
               <div className="text-center">
                 <p className="text-base sm:text-lg text-primary mb-1">Email:</p>
                 <a href="mailto:info@hrevolve.org" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base break-all no-underline">info@hrevolve.org</a>
               </div>
             </div>
             <div className="flex flex-col items-center gap-3 sm:gap-4 p-4">
-              <i className="fas fa-phone-alt text-2xl sm:text-3xl text-primary"></i>
+              <PhoneIcon className="text-2xl sm:text-3xl text-primary" />
               <div className="text-center">
                 <p className="text-base sm:text-lg text-primary mb-1">Phone:</p>
                         <a href="tel:+91 6235355926" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base no-underline">+91 6235355926</a>
@@ -402,7 +212,7 @@ export default function Home() {
               </div>
             </div>
             <div className="flex flex-col items-center gap-3 sm:gap-4 p-4">
-              <i className="fas fa-map-marker-alt text-2xl sm:text-3xl text-primary"></i>
+              <MapMarkerIcon className="text-2xl sm:text-3xl text-primary" />
               <div className="text-center">
                 <p className="text-base sm:text-lg text-primary mb-1">Address:</p>
                 <a href="https://maps.app.goo.gl/QSXn2bYVzeQwVpDj9" className="!text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-300 transition-colors duration-300 text-sm sm:text-base no-underline">
@@ -416,13 +226,13 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 sm:w-12 sm:h-12 bg-primary border-2 border-custom rounded-full flex items-center justify-center text-primary text-lg sm:text-xl transition-all duration-300 ease-out hover:bg-secondary hover:scale-110 shadow-custom"
-            ><i className="fab fa-linkedin"></i></a>
+            ><LinkedinIcon /></a>
             <a
               href="https://www.instagram.com/hr_evolve?igsh=MXg4cXZweWFrc3UwZA=="
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 sm:w-12 sm:h-12 bg-primary border-2 border-custom rounded-full flex items-center justify-center text-primary text-lg sm:text-xl transition-all duration-300 ease-out hover:bg-secondary hover:scale-110 shadow-custom"
-            ><i className="fab fa-instagram"></i></a>
+            ><InstagramIcon /></a>
           </div>
         </div>
       </section>
@@ -433,7 +243,7 @@ export default function Home() {
           {/* Company info and logo */}
           <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
             <Image
-              src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+              src="/logo.png"
               alt="HR Evolve Logo"
               className="w-12 h-12 sm:w-15 sm:h-15 mb-4 keep-colors"
               width={60}
@@ -484,13 +294,13 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-8 h-8 sm:w-10 sm:h-10 bg-primary border-2 border-custom rounded-full flex items-center justify-center text-primary text-sm sm:text-lg transition-all duration-300 ease-out hover:bg-secondary hover:scale-110 shadow-custom"
-                ><i className="fab fa-linkedin"></i></a>
+                ><LinkedinIcon /></a>
                 <a
                   href="https://www.instagram.com/hr_evolve?igsh=MXg4cXZweWFrc3UwZA=="
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-8 h-8 sm:w-10 sm:h-10 bg-primary border-2 border-custom rounded-full flex items-center justify-center text-primary text-sm sm:text-lg transition-all duration-300 ease-out hover:bg-secondary hover:scale-110 shadow-custom"
-                ><i className="fab fa-instagram"></i></a>
+                ><InstagramIcon /></a>
               </div>
             </div>
           </div>
@@ -498,7 +308,7 @@ export default function Home() {
 
         {/* Footer bottom text */}
         <div className="border-t border-custom mt-8 sm:mt-12 pt-4 pb-4 text-center">
-          <p className="text-xs sm:text-sm text-muted">&copy; 2024 HR Evolve India. All rights reserved.</p>
+          <p className="text-xs sm:text-sm text-muted">&copy; {new Date().getFullYear()} HR Evolve India. All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -1,3 +1,5 @@
+import { randomBytes } from 'crypto';
+
 /**
  * Email normalization and validation utilities
  */
@@ -46,7 +48,5 @@ export function isValidEmail(email: string): boolean {
 }
 
 export function generateVerificationToken(): string {
-  return Math.random().toString(36).substring(2, 15) + 
-         Math.random().toString(36).substring(2, 15) + 
-         Date.now().toString(36);
+  return randomBytes(32).toString('hex');
 }

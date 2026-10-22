@@ -7,6 +7,7 @@ import { useTheme } from '../../theme-provider'
 import ThemeToggle from '../../theme-toggle'
 import Link from 'next/link'
 import Image from 'next/image'
+import { CITIES } from '@/lib/cities'
 
 export default function CompletePartnerProfilePage() {
   const { data: session, status } = useSession()
@@ -52,20 +53,6 @@ export default function CompletePartnerProfilePage() {
       }
 
       try {
-        // First, ensure the user is set as a PARTNER when accessing this page
-        const setUserTypeResponse = await fetch('/api/user/set-usertype', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userType: 'PARTNER' }),
-        })
-
-        if (setUserTypeResponse.ok) {
-          // Update session after setting userType
-          await getSession()
-        }
-
         const response = await fetch('/api/partner/complete-profile', {
           method: 'GET',
           headers: {
@@ -232,7 +219,7 @@ export default function CompletePartnerProfilePage() {
             <div className="flex justify-between items-center py-3 sm:py-4">
               <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
                 <Image
-                  src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+                  src="/logo.png"
                   alt="HR Evolve Logo"
                   width={40}
                   height={40}
@@ -587,8 +574,9 @@ export default function CompletePartnerProfilePage() {
                     }}
                   >
                     <option value="">Select your location</option>
-                    <option value="TRIVANDRUM">Trivandrum</option>
-                    <option value="KOCHI">Kochi</option>
+                    {CITIES.map((c) => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
                   </select>
                 </div>
               </div>

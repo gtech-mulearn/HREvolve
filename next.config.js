@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: false,
   images: {
-    domains: ['github.com', 'raw.githubusercontent.com'],
+    // Kept off to stay within the Vercel image-optimization quota; static
+    // images in /public are pre-sized instead.
     unoptimized: true,
     remotePatterns: [
       {
@@ -17,6 +19,17 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        // Static images in /public rarely change; let browsers and the CDN cache them.
+        source: '/:file(.+\\.(?:jpg|jpeg|png|webp|svg|ico))',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' },
+        ],
+      },
+    ]
   },
 }
 

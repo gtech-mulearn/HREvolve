@@ -1,13 +1,6 @@
 // NextAuth type extensions
 import 'next-auth'
 
-declare global {
-  interface Window {
-    gsap: any;
-    toggleMenu: () => void;
-  }
-}
-
 // Application interfaces
 export interface Event {
   id: string;

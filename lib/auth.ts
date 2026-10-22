@@ -2,10 +2,8 @@ import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-
-const prisma = new PrismaClient()
+import { prisma } from './prisma'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -78,28 +76,22 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role
         session.user.userType = token.userType
         
-        // Fetch additional user data including profileCompleted, userType, and role
-        // (role is re-fetched fresh, not just taken from the JWT, so a role change
-        // made via /admin/users takes effect on the user's next request rather than
-        // requiring them to sign out and back in)
-        if (session.user.email) {
-          try {
-            const user = await prisma.user.findUnique({
-              where: { email: session.user.email },
-              select: {
-                profileCompleted: true,
-                userType: true,
-                role: true
-              }
-            })
-            session.user.profileCompleted = user?.profileCompleted || false
-            session.user.userType = user?.userType || 'MEMBER'
-            session.user.role = user?.role || token.role
-          } catch (error) {
-            console.error('Failed to fetch user profile status:', error)
-            session.user.profileCompleted = false
-            session.user.userType = 'MEMBER'
-          }
+        // Role, user type and profile status are re-read on every session check (not
+        // just taken from the JWT) so a role change made via /admin/users applies on the
+        // user's next request instead of requiring them to sign out and back in.
+        try {
+          const user = await prisma.user.findUnique({
+            where: { id: token.sub! },
+            select: { profileCompleted: true, userType: true, role: true },
+          })
+          session.user.profileCompleted = user?.profileCompleted ?? false
+          session.user.userType = user?.userType ?? 'MEMBER'
+          // A deleted user gets no role, rather than whatever the old JWT carried
+          session.user.role = user ? user.role : undefined
+        } catch (error) {
+          console.error('Failed to fetch user profile status:', error)
+          session.user.profileCompleted = false
+          session.user.userType = 'MEMBER'
         }
       }
       return session
