@@ -263,7 +263,15 @@ export default async function ChapterPage({ params }: { params: { city: string }
 
           {past.length > 0 && (
             <>
-              <h3 className="!text-xl font-bold text-primary mb-5">Past events</h3>
+              <div className="flex items-end justify-between gap-4 mb-5">
+                <h3 className="!text-xl font-bold text-primary">Past events</h3>
+                <Link
+                  href={`/events?tab=past&city=${city.value}`}
+                  className="text-sm font-semibold text-primary hover:opacity-70"
+                >
+                  View all →
+                </Link>
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {past.map((event) => {
                   const card = (

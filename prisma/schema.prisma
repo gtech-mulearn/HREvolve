@@ -126,6 +126,8 @@ model Event {
   category        String?
   linkedinUrl     String?
   registrationUrl String?
+  // Flagship events: the edition's own website, e.g. https://elevate25.hrevolve.org
+  siteUrl         String?
   isPublished     Boolean   @default(false)
   isFlagship      Boolean   @default(false)
   // Short badge line for flagship events, e.g. "First ever in Kochi"

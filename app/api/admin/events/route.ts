@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
     isPublished,
     isFlagship,
     highlight,
+    siteUrl,
   } = body
 
   if (!title || !date) {
@@ -72,6 +73,7 @@ export async function POST(request: NextRequest) {
       isPublished: !!isPublished,
       isFlagship: !!isFlagship,
       highlight: highlight?.trim() || null,
+      siteUrl: isFlagship ? siteUrl?.trim() || null : null,
       createdById: session.user.id,
     },
   })

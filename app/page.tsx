@@ -191,7 +191,7 @@ export default function Home() {
       )}
       
       {/* Contact section */}
-      <section id="contact" className="bg-secondary py-12 sm:py-16 lg:py-20 px-4 sm:px-6 md:px-8 lg:px-12 text-center transition-colors duration-300">
+      {/* <section id="contact" className="bg-secondary py-12 sm:py-16 lg:py-20 px-4 sm:px-6 md:px-8 lg:px-12 text-center transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl md:text-5xl mb-8 sm:mb-10 md:mb-12 text-primary">Contact Us</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-8 sm:mb-12">
@@ -235,7 +235,7 @@ export default function Home() {
             ><InstagramIcon /></a>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Footer section */}
       <footer className="bg-tertiary text-primary pt-8 sm:pt-12 pb-0 transition-colors duration-300">

@@ -184,8 +184,17 @@ export default function EventsPage() {
     loadPrograms();
 
     // Deep link from the homepage Elevate section: /events?type=flagship
-    if (new URLSearchParams(window.location.search).get('type') === 'flagship') {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('type') === 'flagship') {
       setProgramType('flagship');
+    }
+    // Deep link from a chapter page's "View all": /events?tab=past&city=TRIVANDRUM
+    if (params.get('tab') === 'past') {
+      setActiveTab('past');
+    }
+    const cityParam = params.get('city');
+    if (cityParam && Object.keys(CITY_LABELS).includes(cityParam)) {
+      setCityFilter(cityParam as CityValue);
     }
   }, []);
 

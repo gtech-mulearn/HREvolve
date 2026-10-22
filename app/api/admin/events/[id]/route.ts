@@ -44,6 +44,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     isPublished,
     isFlagship,
     highlight,
+    siteUrl,
   } = body
 
   if (city !== undefined && city !== null && city !== '' && !isValidCity(city)) {
@@ -66,6 +67,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       ...(isPublished !== undefined && { isPublished: !!isPublished }),
       ...(isFlagship !== undefined && { isFlagship: !!isFlagship }),
       ...(highlight !== undefined && { highlight: highlight?.trim() || null }),
+      ...(siteUrl !== undefined && { siteUrl: siteUrl?.trim() || null }),
     },
   })
 

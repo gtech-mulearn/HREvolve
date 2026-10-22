@@ -26,6 +26,7 @@ export default async function EditEventPage({ params }: { params: { id: string }
     isPublished: event.isPublished,
     isFlagship: event.isFlagship,
     highlight: event.highlight || '',
+    siteUrl: event.siteUrl || '',
   }
 
   return (

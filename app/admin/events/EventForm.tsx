@@ -28,6 +28,7 @@ interface EventFormData {
   isPublished: boolean
   isFlagship: boolean
   highlight: string
+  siteUrl: string
 }
 
 const emptyForm: EventFormData = {
@@ -44,6 +45,7 @@ const emptyForm: EventFormData = {
   isPublished: false,
   isFlagship: false,
   highlight: '',
+  siteUrl: '',
 }
 
 const inputStyle = {
@@ -411,6 +413,24 @@ export default function EventForm({ initialData }: { initialData?: EventFormData
                     style={inputStyle}
                   />
                 </Field>
+                <div className="mt-4">
+                  <Field label="Site URL (this edition's own website)">
+                    <div className="relative">
+                      <LinkIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary)' }} />
+                      <input
+                        type="url"
+                        placeholder="https://elevate26tvm.hrevolve.org"
+                        value={form.siteUrl}
+                        onChange={(e) => handleChange('siteUrl', e.target.value)}
+                        className={`${inputClass} pl-9`}
+                        style={inputStyle}
+                      />
+                    </div>
+                  </Field>
+                  <p className="text-xs mt-1.5" style={{ color: 'var(--text-secondary)' }}>
+                    Event cards and the Elevate timeline link here.
+                  </p>
+                </div>
               </div>
             )}
           </Section>

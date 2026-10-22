@@ -13,6 +13,7 @@ export interface ProgramData {
   registration_url?: string;
   is_flagship: boolean;
   highlight: string;
+  site_url: string;
 }
 
 export interface ProcessedPrograms {
@@ -34,6 +35,7 @@ interface ApiEvent {
   registrationUrl: string | null;
   isFlagship: boolean;
   highlight: string | null;
+  siteUrl: string | null;
 }
 
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
@@ -90,6 +92,7 @@ async function loadPublishedEvents(): Promise<ProcessedPrograms> {
       registration_url: event.registrationUrl || undefined,
       is_flagship: !!event.isFlagship,
       highlight: event.highlight || '',
+      site_url: event.siteUrl || '',
     };
 
     if (program.date >= today) {
@@ -210,8 +213,8 @@ export function getFallbackImageUrl(): string {
 
 export { CITY_LABELS } from '@/lib/cities';
 
-// Where clicking an event card goes: its LinkedIn post, or failing that its own
-// site/registration page (e.g. an Elevate edition's microsite).
+// Where clicking an event card goes: the edition's own website (flagship events),
+// else its LinkedIn post, else its registration page.
 export function getEventLink(program: ProgramData): string {
-  return program.linkedin_url || program.registration_url || '';
+  return program.site_url || program.linkedin_url || program.registration_url || '';
 }

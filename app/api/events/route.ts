@@ -22,6 +22,7 @@ export async function GET() {
       registrationUrl: true,
       isFlagship: true,
       highlight: true,
+      siteUrl: true,
     },
   })
 
