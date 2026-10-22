@@ -13,7 +13,7 @@ export default async function AdminSponsorsPage() {
 
   const sponsors = await prisma.sponsor.findMany({
     orderBy: { createdAt: 'desc' },
-    include: { months: true },
+    include: { months: { select: { month: true, year: true } } },
   })
 
   return (
@@ -23,7 +23,7 @@ export default async function AdminSponsorsPage() {
           Sponsors
         </h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-          Upload sponsor logos and choose which ones appear on the homepage this month.
+          Upload sponsor logos for the homepage or a city chapter, and choose which ones appear each month.
         </p>
       </div>
 

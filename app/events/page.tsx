@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import ThemeToggle from '../theme-toggle'
+import SiteHeader from '@/components/SiteHeader'
 import { useTheme } from '../theme-provider'
-import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS } from '../utils/sheetsApi'
+import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS, getEventLink } from '../utils/sheetsApi'
+import { CITY_VALUES, type CityValue } from '@/lib/cities'
 
 interface ProgramCardProps {
   program: ProgramData;
@@ -18,28 +19,29 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
   const isDark = theme === 'dark';
   
   // Get multiple URL formats for Google Drive images
-  const imageUrls = program.image_url ? getGoogleDriveUrls(program.image_url) : [getFallbackImageUrl()];
+  // Flagship events without their own image fall back to the Elevate artwork
+  const fallbackImage = program.is_flagship ? '/elevate_new.jpg' : getFallbackImageUrl();
+  const imageUrls = program.image_url ? getGoogleDriveUrls(program.image_url) : [fallbackImage];
   const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
   const [imageSrc, setImageSrc] = useState(imageUrls[0]);
 
   const handleImageError = () => {
     const nextIndex = currentUrlIndex + 1;
     if (nextIndex < imageUrls.length) {
-      console.log(`Image failed, trying fallback ${nextIndex}:`, imageUrls[nextIndex]);
       setCurrentUrlIndex(nextIndex);
       setImageSrc(imageUrls[nextIndex]);
     } else {
-      console.log('All image URLs failed, using fallback');
-      setImageSrc(getFallbackImageUrl());
+      setImageSrc(fallbackImage);
     }
   };
 
-  const hasLinkedIn = !!program.linkedin_url;
+  const eventLink = getEventLink(program);
+  const hasLinkedIn = !!eventLink;
 
   return (
     <div
       onClick={() => {
-        if (hasLinkedIn) window.open(program.linkedin_url, '_blank', 'noopener,noreferrer');
+        if (hasLinkedIn) window.open(eventLink, '_blank', 'noopener,noreferrer');
       }}
       className={`rounded-xl shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2 ${hasLinkedIn ? 'cursor-pointer' : ''}`}
       style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-custom)', borderWidth: '1px' }}
@@ -62,6 +64,11 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
             </svg>
           </div>
         )}
+        {program.is_flagship && (
+          <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 to-orange-500 text-black shadow">
+            ✦ Elevate
+          </div>
+        )}
         {isComingSoon && (
           <div className="absolute top-2 right-2 bg-black text-white px-2 py-1 rounded-full text-xs font-bold dark:bg-white dark:text-black">
             Coming Soon
@@ -76,6 +83,11 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
 
       {/* Event Content */}
       <div className="p-6">
+        {program.is_flagship && program.highlight && (
+          <p className="text-xs font-bold uppercase tracking-wider mb-2 text-amber-600 dark:text-amber-400">
+            {program.highlight}
+          </p>
+        )}
         <h4 className="text-xl font-bold mb-2 line-clamp-2" style={{ color: 'var(--text-primary)' }}>
           {program.title}
         </h4>
@@ -100,6 +112,12 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
           {program.description}
         </p>
 
+        {isPast && program.is_flagship && eventLink && (
+          <span className="inline-flex items-center text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+            Visit the event site →
+          </span>
+        )}
+
         {!isPast && program.registration_url && (
           <a
             href={program.registration_url}
@@ -122,45 +140,6 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
         )}
       </div>
 
-      {/* Script for mobile navigation */}
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          // Mobile Navigation Toggle
-          window.toggleMenu = function() {
-            const mobileNav = document.querySelector('.mobile-nav');
-            const hamburger = document.querySelector('.hamburger-menu');
-            
-            if (mobileNav.style.right === '0px' || mobileNav.style.right === '0%') {
-              mobileNav.style.right = '-100%';
-              hamburger.style.transform = 'rotate(0deg)';
-            } else {
-              mobileNav.style.right = '0px';
-              hamburger.style.transform = 'rotate(90deg)';
-            }
-          };
-
-          // Header scroll effect
-          window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            
-            if (window.scrollY > 50) {
-              header.classList.add('header-scrolled');
-            } else {
-              header.classList.remove('header-scrolled');
-            }
-          });
-
-          // Close mobile menu on link click
-          document.querySelectorAll('.mobile-nav a').forEach(link => {
-            link.addEventListener('click', function() {
-              const mobileNav = document.querySelector('.mobile-nav');
-              const hamburger = document.querySelector('.hamburger-menu');
-              mobileNav.style.right = '-100%';
-              hamburger.style.transform = 'rotate(0deg)';
-            });
-          });
-        `
-      }} />
     </div>
   )
 }
@@ -173,7 +152,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
-  const [cityFilter, setCityFilter] = useState<'all' | 'TRIVANDRUM' | 'KOCHI'>('all');
+  const [cityFilter, setCityFilter] = useState<'all' | CityValue>('all');
   const [programType, setProgramType] = useState<'monthly' | 'flagship'>('monthly');
 
   const filterByCity = (list: ProgramData[]) =>
@@ -204,57 +183,9 @@ export default function EventsPage() {
   useEffect(() => {
     loadPrograms();
 
-    // Mobile navigation functionality
-    const mobileNav = document.querySelector(".mobile-nav")
-    let isMenuOpen = false
-
-    // @ts-ignore
-    window.toggleMenu = function() {
-      isMenuOpen = !isMenuOpen
-      if (isMenuOpen && mobileNav) {
-        // @ts-ignore
-        if (window.gsap) {
-          // @ts-ignore
-          window.gsap.to(mobileNav, { right: "0%", duration: 0.1 })
-        }
-      } else if (mobileNav) {
-        // @ts-ignore
-        if (window.gsap) {
-          // @ts-ignore
-          window.gsap.to(mobileNav, { right: "-100%", duration: 0.1 })
-        }
-      }
-    }
-
-    // Close the mobile nav when a link is clicked
-    document.querySelectorAll(".mobile-nav ul li a").forEach((link) => {
-      link.addEventListener("click", () => {
-        if (mobileNav) {
-          // @ts-ignore
-          if (window.gsap) {
-            // @ts-ignore
-            window.gsap.to(mobileNav, { right: "-100%", duration: 0.1 })
-          }
-        }
-        isMenuOpen = false
-      })
-    })
-
-    // Header scroll effect
-    const header = document.querySelector('header')
-    
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        header?.classList.add('header-scrolled')
-      } else {
-        header?.classList.remove('header-scrolled')
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
+    // Deep link from the homepage Elevate section: /events?type=flagship
+    if (new URLSearchParams(window.location.search).get('type') === 'flagship') {
+      setProgramType('flagship');
     }
   }, []);
 
@@ -301,122 +232,7 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Header section */}
-      <header className="fixed top-0 left-0 right-0 z-[1000] bg-transparent transition-all duration-300 ease-out">
-        <div className="container mx-auto px-6 py-5 md:px-8">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
-                alt="HR Evolve Logo"
-                className="h-12 w-auto keep-colors"
-                width={50}
-                height={50}
-              />
-            </Link>
-            <nav className="hidden md:flex items-center space-x-10">
-              <Link href="/#about" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
-                About
-              </Link>
-              <Link href="/#programs" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
-                Programs
-              </Link>
-              <Link href="/gallery" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
-                Gallery
-              </Link>
-              <Link href="/#contact" className="nav-link no-underline font-semibold text-base transition-all duration-300 hover:opacity-80">
-                Contact
-              </Link>
-              <div className="ml-2">
-                <ThemeToggle />
-              </div>
-            </nav>
-            <div className="flex items-center md:hidden">
-              <ThemeToggle />
-              <svg
-                className="ml-4 hamburger-menu cursor-pointer transition-all duration-300"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                onClick={() => {
-                  // @ts-ignore
-                  if (typeof window !== 'undefined' && window.toggleMenu) {
-                    // @ts-ignore
-                    window.toggleMenu()
-                  }
-                }}
-              >
-                <rect x="2" y="5" width="20" height="3" fill="currentColor" />
-                <rect x="2" y="11" width="20" height="3" fill="currentColor" />
-                <rect x="2" y="17" width="20" height="3" fill="currentColor" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Navigation */}
-      <nav className="mobile-nav fixed top-0 right-[-100%] w-64 h-full z-[1001] p-6 shadow-custom transition-all duration-100 ease-out" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        <svg
-          className="text-muted float-right text-[28px] font-bold transition-colors duration-300 ease-out hover:text-primary focus:text-primary cursor-pointer"
-          width="36"
-          height="36"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          onClick={() => {
-            // @ts-ignore
-            if (typeof window !== 'undefined' && window.toggleMenu) {
-              // @ts-ignore
-              window.toggleMenu()
-            }
-          }}
-        >
-          <line
-            x1="4.5"
-            y1="4.5"
-            x2="19.5"
-            y2="19.5"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <line
-            x1="4.5"
-            y1="19.5"
-            x2="19.5"
-            y2="4.5"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-        </svg>
-        <ul className="list-none p-0 mt-16">
-          <li className="mb-4">
-            <Link href="/#about" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-              About
-            </Link>
-          </li>
-          <li className="mb-4">
-            <Link href="/#programs" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-              Programs
-            </Link>
-          </li>
-          <li className="mb-4">
-            <Link href="/gallery" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-              Gallery
-            </Link>
-          </li>
-          <li className="mb-4">
-            <Link href="/#contact" className="block no-underline py-3 px-4 rounded transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-              Contact
-            </Link>
-          </li>
-        </ul>
-        <div className="p-5 border-t" style={{ borderColor: 'var(--border-custom)' }}>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <SiteHeader />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16">
         {/* Page Header */}
@@ -432,11 +248,11 @@ export default function EventsPage() {
             Back to Home
           </Link>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            {programType === 'flagship' ? 'Flagship Program' : 'Monthly Programs'}
+            {programType === 'flagship' ? 'Elevate' : 'Monthly Programs'}
           </h1>
           <p className="text-base sm:text-lg max-w-2xl mx-auto px-4" style={{ color: 'var(--text-secondary)' }}>
             {programType === 'flagship'
-              ? 'Our marquee HR Evolve events — the big-ticket conclaves and conferences'
+              ? "HR Evolve's flagship conclave. It started in Trivandrum in 2024, reached Kochi for the first time in 2026, and every edition brings the region's people leaders into one room for a day of bold ideas and real conversations."
               : 'Browse all our upcoming and past HR events, workshops, and conferences'}
           </p>
         </div>
@@ -467,7 +283,7 @@ export default function EventsPage() {
               }
             >
               <span style={programType === 'flagship' ? { color: 'var(--bg-primary)' } : undefined}>
-                Flagship Program
+                Flagship · Elevate
               </span>
             </button>
           </div>
@@ -508,8 +324,8 @@ export default function EventsPage() {
         </div>
 
         {/* City Filter */}
-        <div className="flex justify-center gap-2 mb-8 sm:mb-10 px-4">
-          {(['all', 'TRIVANDRUM', 'KOCHI'] as const).map((c) => (
+        <div className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-10 px-4">
+          {(['all', ...CITY_VALUES] as const).map((c) => (
             <button
               key={c}
               onClick={() => setCityFilter(c)}

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../../../../lib/auth'
 import { prisma } from '../../../../lib/prisma'
 import { PartnershipStatus } from '@prisma/client'
+import { isValidCity } from '@/lib/cities'
 
 // Helper function to check if mandatory fields are completed
 function checkMandatoryFields(partner: any): boolean {
@@ -29,21 +30,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
-    console.log('Fetching partner profile for user:', session.user.email)
-
-    // Find the user first
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      include: {
-        partner: true
-      }
+      select: { id: true, name: true, email: true, userType: true, city: true, partner: true }
     })
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
-
-    console.log('Found user with partner:', user)
 
     return NextResponse.json({
       user: {
@@ -72,36 +66,23 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json()
 
-    console.log('Creating/updating partner profile for user:', session.user.email)
-    console.log('Partner data:', data)
+    if (!data.companyName?.trim() || !data.businessType?.trim()) {
+      return NextResponse.json({ error: 'Company name and business type are required' }, { status: 400 })
+    }
 
-    if (!data.city || (data.city !== 'TRIVANDRUM' && data.city !== 'KOCHI')) {
+    if (!isValidCity(data.city)) {
       return NextResponse.json({ error: 'Please select a valid location' }, { status: 400 })
     }
 
-    // Find the user first
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      include: {
-        partner: true
-      }
+      select: { id: true }
     })
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Update user type to PARTNER
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        userType: 'PARTNER',
-        profileCompleted: true,
-        city: data.city
-      }
-    })
-
-    // Create or update partner profile
     const partnerData = {
       companyName: data.companyName,
       businessType: data.businessType,
@@ -123,25 +104,23 @@ export async function POST(request: NextRequest) {
       partnershipStatus: PartnershipStatus.PENDING
     }
 
-    let partner
-
-    if (user.partner) {
-      // Update existing partner profile
-      partner = await prisma.partner.update({
-        where: { userId: user.id },
-        data: partnerData
-      })
-      console.log('Updated partner:', partner)
-    } else {
-      // Create new partner profile
-      partner = await prisma.partner.create({
+    // Mark the user as a partner and save the partner profile together, so a failed
+    // profile save never leaves a user flagged PARTNER with no Partner row.
+    const [, partner] = await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.id },
         data: {
-          ...partnerData,
-          userId: user.id
+          userType: 'PARTNER',
+          profileCompleted: true,
+          city: data.city
         }
+      }),
+      prisma.partner.upsert({
+        where: { userId: user.id },
+        update: partnerData,
+        create: { ...partnerData, userId: user.id }
       })
-      console.log('Created partner:', partner)
-    }
+    ])
 
     return NextResponse.json({ 
       message: 'Partner profile saved successfully',

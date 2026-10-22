@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
+import { isValidCity } from '@/lib/cities'
 import { supabaseAdmin, SPONSOR_LOGOS_BUCKET, ensureSponsorLogosBucket } from '@/lib/supabase-admin'
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024
@@ -14,7 +15,7 @@ export async function GET() {
 
   const sponsors = await prisma.sponsor.findMany({
     orderBy: { createdAt: 'desc' },
-    include: { months: true },
+    include: { months: { select: { month: true, year: true } } },
   })
 
   return NextResponse.json({ sponsors })
@@ -30,6 +31,8 @@ export async function POST(request: NextRequest) {
   const files = formData.getAll('files')
   const month = parseInt(String(formData.get('month')), 10)
   const year = parseInt(String(formData.get('year')), 10)
+  // No city = homepage sponsor
+  const cityParam = formData.get('city')
 
   if (files.length === 0) {
     return NextResponse.json({ error: 'No files provided' }, { status: 400 })
@@ -37,6 +40,10 @@ export async function POST(request: NextRequest) {
   if (!month || month < 1 || month > 12 || !year) {
     return NextResponse.json({ error: 'A valid month and year are required' }, { status: 400 })
   }
+  if (cityParam && !isValidCity(cityParam)) {
+    return NextResponse.json({ error: 'Invalid city' }, { status: 400 })
+  }
+  const city = isValidCity(cityParam) ? cityParam : null
 
   try {
     await ensureSponsorLogosBucket()
@@ -80,6 +87,7 @@ export async function POST(request: NextRequest) {
           name: defaultName || null,
           logoUrl: data.publicUrl,
           path,
+          city,
           createdById: session.user.id,
           months: {
             create: { month, year },

@@ -7,6 +7,7 @@ import { useTheme } from '../../theme-provider'
 import ThemeToggle from '../../theme-toggle'
 import Link from 'next/link'
 import Image from 'next/image'
+import { CITIES } from '@/lib/cities'
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -110,7 +111,7 @@ export default function SignUp() {
           <div className="flex justify-between items-center py-3 sm:py-4">
             <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
               <Image
-                src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+                src="/logo.png"
                 alt="HR Evolve Logo"
                 width={40}
                 height={40}
@@ -206,8 +207,9 @@ export default function SignUp() {
                     onChange={handleChange}
                   >
                     <option value="">Select your location</option>
-                    <option value="TRIVANDRUM">Trivandrum</option>
-                    <option value="KOCHI">Kochi</option>
+                    {CITIES.map((c) => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
                   </select>
                 </div>
                 <div>

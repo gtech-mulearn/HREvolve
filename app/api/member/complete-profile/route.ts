@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { isValidCity } from '@/lib/cities'
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!city || (city !== 'TRIVANDRUM' && city !== 'KOCHI')) {
+    if (!isValidCity(city)) {
       return NextResponse.json(
         { error: 'Please select a valid location' },
         { status: 400 }
@@ -62,20 +63,6 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Update user profile in database
-      console.log('Updating user with email:', session.user.email) // Debug log
-      console.log('Update data:', {
-        name,
-        phone,
-        organization,
-        designation,
-        experience,
-        linkedinUrl: linkedinUrl || null,
-        expertise: expertise || null,
-        interests: interests || null,
-        profileCompleted: true
-      }) // Debug log
-
       // Update user profile
       const updateData: any = {
         name,
@@ -115,8 +102,6 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      console.log('Updated user:', updatedUser) // Debug log
-
       return NextResponse.json({
         message: 'Profile completed successfully!',
         user: updatedUser
@@ -151,8 +136,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.log('Fetching profile for user:', session.user.email) // Debug log
-
     const user = await prisma.user.findUnique({
       where: {
         email: session.user.email
@@ -175,8 +158,6 @@ export async function GET(request: NextRequest) {
         updatedAt: true
       }
     })
-
-    console.log('Found user:', user) // Debug log
 
     if (!user) {
       return NextResponse.json(

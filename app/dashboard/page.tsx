@@ -19,7 +19,6 @@ export default function Dashboard() {
   // Check if mandatory fields are completed
   const checkMandatoryFields = (user: any) => {
     if (!user) {
-      console.log('Dashboard: User is null/undefined')
       return false
     }
     
@@ -31,16 +30,13 @@ export default function Dashboard() {
       'experience'
     ]
     
-    console.log('Dashboard: Checking mandatory fields for user:', user)
     
     const result = mandatoryFields.every(field => {
       const value = user[field]
       const isValid = value !== null && value !== undefined && value.toString().trim() !== ''
-      console.log(`Dashboard: Field ${field}: ${value} -> ${isValid}`)
       return isValid
     })
     
-    console.log('Dashboard: Mandatory fields check result:', result)
     return result
   }
 
@@ -63,26 +59,21 @@ export default function Dashboard() {
           const data = await response.json()
           const user = data.user
           
-          console.log('Dashboard: User data fetched:', user) // Debug log
           
           // If user is a partner, redirect to partner dashboard
           if (user?.userType === 'PARTNER') {
-            console.log('Dashboard: Redirecting partner to partner dashboard') // Debug log
             router.push('/partner/dashboard')
             return
           }
 
           // Check if user's mandatory fields are completed
           if (!checkMandatoryFields(user)) {
-            console.log('Dashboard: Mandatory fields incomplete, redirecting to profile') // Debug log
             router.push('/member/complete-profile')
             return
           }
 
-          console.log('Dashboard: All checks passed, showing dashboard') // Debug log
           setLoading(false)
         } else {
-          console.log('Dashboard: API call failed, redirecting to profile completion') // Debug log
           // If API call fails, redirect to profile completion to be safe
           router.push('/member/complete-profile')
         }
@@ -127,7 +118,7 @@ export default function Dashboard() {
           <div className="flex justify-between items-center py-3 sm:py-4">
             <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
               <Image
-                src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+                src="/logo.png"
                 alt="HR Evolve Logo"
                 width={40}
                 height={40}

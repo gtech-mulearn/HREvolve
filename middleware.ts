@@ -8,7 +8,8 @@ export default withAuth(
         req.nextUrl.pathname.startsWith('/api') ||
         req.nextUrl.pathname === '/' ||
         req.nextUrl.pathname.startsWith('/events') ||
-        req.nextUrl.pathname.startsWith('/gallery')) {
+        req.nextUrl.pathname.startsWith('/gallery') ||
+        req.nextUrl.pathname.startsWith('/chapters')) {
       return NextResponse.next()
     }
     
@@ -44,6 +45,7 @@ export default withAuth(
             req.nextUrl.pathname.startsWith('/auth') ||
             req.nextUrl.pathname.startsWith('/events') ||
             req.nextUrl.pathname.startsWith('/gallery') ||
+            req.nextUrl.pathname.startsWith('/chapters') ||
             req.nextUrl.pathname.startsWith('/api/auth') ||
             req.nextUrl.pathname.startsWith('/api/events') ||
             req.nextUrl.pathname.startsWith('/api/gallery') ||

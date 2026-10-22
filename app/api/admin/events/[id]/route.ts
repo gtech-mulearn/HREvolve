@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { supabaseAdmin, EVENT_IMAGES_BUCKET } from '@/lib/supabase-admin'
+import { isValidCity } from '@/lib/cities'
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const { session, error, status } = await requireAdminSession(['ADMIN', 'HOST'])
@@ -42,10 +43,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     registrationUrl,
     isPublished,
     isFlagship,
+    highlight,
   } = body
 
-  if (city !== undefined && city !== null && city !== '' && city !== 'TRIVANDRUM' && city !== 'KOCHI') {
-    return NextResponse.json({ error: 'city must be TRIVANDRUM or KOCHI' }, { status: 400 })
+  if (city !== undefined && city !== null && city !== '' && !isValidCity(city)) {
+    return NextResponse.json({ error: 'Invalid city' }, { status: 400 })
   }
 
   const event = await prisma.event.update({
@@ -63,6 +65,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       ...(registrationUrl !== undefined && { registrationUrl }),
       ...(isPublished !== undefined && { isPublished: !!isPublished }),
       ...(isFlagship !== undefined && { isFlagship: !!isFlagship }),
+      ...(highlight !== undefined && { highlight: highlight?.trim() || null }),
     },
   })
 

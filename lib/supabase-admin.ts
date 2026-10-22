@@ -39,3 +39,14 @@ export async function ensureSponsorLogosBucket() {
     throw error
   }
 }
+
+export const TEAM_PHOTOS_BUCKET = 'team-photos'
+
+export async function ensureTeamPhotosBucket() {
+  const { error } = await supabaseAdmin.storage.createBucket(TEAM_PHOTOS_BUCKET, {
+    public: true,
+  })
+  if (error && !error.message.includes('already exists')) {
+    throw error
+  }
+}

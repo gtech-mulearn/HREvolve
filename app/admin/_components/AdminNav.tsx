@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Squares2X2Icon, CalendarDaysIcon, PhotoIcon, BuildingOffice2Icon, UsersIcon } from '@heroicons/react/24/outline'
+import { Squares2X2Icon, CalendarDaysIcon, PhotoIcon, BuildingOffice2Icon, UsersIcon, UserGroupIcon } from '@heroicons/react/24/outline'
 import {
   Squares2X2Icon as Squares2X2IconSolid,
   CalendarDaysIcon as CalendarDaysIconSolid,
   PhotoIcon as PhotoIconSolid,
   BuildingOffice2Icon as BuildingOffice2IconSolid,
   UsersIcon as UsersIconSolid,
+  UserGroupIcon as UserGroupIconSolid,
 } from '@heroicons/react/24/solid'
 
 export function getAdminNavLinks(isAdmin: boolean) {
@@ -18,6 +19,7 @@ export function getAdminNavLinks(isAdmin: boolean) {
     { href: '/admin/gallery', label: 'Gallery', icon: PhotoIcon, activeIcon: PhotoIconSolid },
     ...(isAdmin
       ? [
+          { href: '/admin/team', label: 'Core Team', icon: UserGroupIcon, activeIcon: UserGroupIconSolid },
           { href: '/admin/sponsors', label: 'Sponsors', icon: BuildingOffice2Icon, activeIcon: BuildingOffice2IconSolid },
           { href: '/admin/users', label: 'Users', icon: UsersIcon, activeIcon: UsersIconSolid },
         ]

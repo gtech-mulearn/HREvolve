@@ -19,6 +19,7 @@ import StatusBadge from '../_components/StatusBadge'
 import ConfirmDialog from '../_components/ConfirmDialog'
 import EmptyState from '../_components/EmptyState'
 import { useToast } from '../_components/Toast'
+import { CITIES, CITY_LABELS, type CityValue } from '@/lib/cities'
 
 interface EventRow {
   id: string
@@ -33,12 +34,7 @@ interface EventRow {
 }
 
 type FilterTab = 'all' | 'published' | 'draft'
-type CityFilter = 'all' | 'TRIVANDRUM' | 'KOCHI'
-
-const CITY_LABELS: Record<string, string> = {
-  TRIVANDRUM: 'Trivandrum',
-  KOCHI: 'Kochi',
-}
+type CityFilter = 'all' | CityValue
 
 const PAGE_SIZE = 10
 
@@ -189,8 +185,9 @@ export default function EventsTable({ events }: { events: EventRow[] }) {
           style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-custom)', color: 'var(--text-primary)' }}
         >
           <option value="all">All Cities</option>
-          <option value="TRIVANDRUM">Trivandrum</option>
-          <option value="KOCHI">Kochi</option>
+          {CITIES.map((c) => (
+            <option key={c.value} value={c.value}>{c.label}</option>
+          ))}
         </select>
       </div>
 
@@ -260,7 +257,7 @@ export default function EventsTable({ events }: { events: EventRow[] }) {
                     <td className="px-5 py-3 hidden md:table-cell">
                       <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: 'var(--text-primary)' }}>
                         <CalendarDaysIcon className="w-3.5 h-3.5" style={{ color: 'var(--text-secondary)' }} />
-                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {new Date(event.date).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
                       {(event.location || event.city) && (
                         <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>

@@ -7,6 +7,7 @@ import Avatar from '../_components/Avatar'
 import RoleBadge from '../_components/RoleBadge'
 import EmptyState from '../_components/EmptyState'
 import { useToast } from '../_components/Toast'
+import { CITIES, CITY_LABELS, type CityValue } from '@/lib/cities'
 
 interface UserRow {
   id: string
@@ -20,12 +21,7 @@ interface UserRow {
 
 const ROLES = ['USER', 'HOST', 'ADMIN', 'HR_MANAGER']
 
-type CityFilter = 'all' | 'TRIVANDRUM' | 'KOCHI'
-
-const CITY_LABELS: Record<string, string> = {
-  TRIVANDRUM: 'Trivandrum',
-  KOCHI: 'Kochi',
-}
+type CityFilter = 'all' | CityValue
 
 export default function UsersTable({ users, currentUserId }: { users: UserRow[]; currentUserId: string }) {
   const router = useRouter()
@@ -110,8 +106,9 @@ export default function UsersTable({ users, currentUserId }: { users: UserRow[];
           style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-custom)', color: 'var(--text-primary)' }}
         >
           <option value="all">All Locations</option>
-          <option value="TRIVANDRUM">Trivandrum</option>
-          <option value="KOCHI">Kochi</option>
+          {CITIES.map((c) => (
+            <option key={c.value} value={c.value}>{c.label}</option>
+          ))}
         </select>
 
         <button

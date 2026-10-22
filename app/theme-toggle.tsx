@@ -1,11 +1,12 @@
 'use client'
 
 import { useTheme } from './theme-provider'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useId } from 'react'
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
-  const maskId = useMemo(() => `moon-mask-${Math.random().toString(36).substr(2, 9)}`, [])
+  // useId is stable between server and client render (Math.random caused hydration mismatches)
+  const maskId = `moon-mask-${useId().replace(/:/g, '')}`
 
   useEffect(() => {
     // Set the data-theme attribute on the document element

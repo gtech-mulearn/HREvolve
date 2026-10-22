@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useTheme } from '../theme-provider';
-import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS } from '../utils/sheetsApi';
+import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS, getEventLink } from '../utils/sheetsApi';
+import { CITY_VALUES, type CityValue } from '@/lib/cities'
 
 interface ProgramCardProps {
   program: ProgramData;
@@ -26,11 +27,9 @@ function PastEventImage({ program, className, width, height }: PastEventImagePro
   const handleImageError = () => {
     const nextIndex = currentUrlIndex + 1;
     if (nextIndex < imageUrls.length) {
-      console.log(`Past event image failed, trying fallback ${nextIndex}:`, imageUrls[nextIndex]);
       setCurrentUrlIndex(nextIndex);
       setImageSrc(imageUrls[nextIndex]);
     } else {
-      console.log('All past event image URLs failed, using fallback');
       setImageSrc(getFallbackImageUrl());
     }
   };
@@ -60,21 +59,20 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
   const handleImageError = () => {
     const nextIndex = currentUrlIndex + 1;
     if (nextIndex < imageUrls.length) {
-      console.log(`Image failed, trying fallback ${nextIndex}:`, imageUrls[nextIndex]);
       setCurrentUrlIndex(nextIndex);
       setImageSrc(imageUrls[nextIndex]);
     } else {
-      console.log('All image URLs failed, using fallback');
       setImageSrc(getFallbackImageUrl());
     }
   };
 
-  const hasLinkedIn = !!program.linkedin_url;
+  const eventLink = getEventLink(program);
+  const hasLinkedIn = !!eventLink;
 
   return (
     <div
       onClick={() => {
-        if (hasLinkedIn) window.open(program.linkedin_url, '_blank', 'noopener,noreferrer');
+        if (hasLinkedIn) window.open(eventLink, '_blank', 'noopener,noreferrer');
       }}
       className={`bg-primary rounded-xl border border-custom shadow-soft overflow-hidden transition-all duration-300 hover:shadow-strong hover:-translate-y-2 h-full flex flex-col ${hasLinkedIn ? 'cursor-pointer' : ''}`}
     >
@@ -175,7 +173,7 @@ export default function ProgramsSection() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cityFilter, setCityFilter] = useState<'all' | 'TRIVANDRUM' | 'KOCHI'>('all');
+  const [cityFilter, setCityFilter] = useState<'all' | CityValue>('all');
 
   const filterByCity = (list: ProgramData[]) =>
     cityFilter === 'all' ? list : list.filter((program) => program.city === cityFilter);
@@ -206,75 +204,11 @@ export default function ProgramsSection() {
 
   // Continuous auto-scroll carousel for past events - only worth sliding
   // once there are enough events that they wouldn't all fit statically
+  // Animated with the shared CSS marquee (globals.css) - the track holds the list twice,
+  // so translating it by -50% loops seamlessly; hover pauses it.
   const isPastSliding = filteredPast.length > 4;
+  const pastScrollDuration = filteredPast.length * 15;
 
-  useEffect(() => {
-    if (!isPastSliding) return;
-
-    let animationId: number | null = null;
-    let gallery: HTMLElement | null = null;
-    let handleMouseEnter: (() => void) | null = null;
-    let handleMouseLeave: (() => void) | null = null;
-
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      gallery = document.querySelector('.gallery') as HTMLElement;
-      if (!gallery) return;
-
-      let scrollPosition = 0;
-      let isPaused = false;
-      const scrollSpeed = 0.3; // Reduced speed - pixels per frame
-      const imageWidth = 250 + 16; // Image width + gap
-      const totalWidth = filteredPast.length * imageWidth;
-
-      function smoothScroll() {
-        if (!isPaused) {
-          scrollPosition += scrollSpeed;
-
-          // Reset position when we've scrolled past all images
-          if (scrollPosition >= totalWidth) {
-            scrollPosition = 0;
-          }
-
-          gallery!.style.transform = `translateX(-${scrollPosition}px)`;
-        }
-
-        animationId = requestAnimationFrame(smoothScroll);
-      }
-
-      // Hover event listeners for pause/resume
-      handleMouseEnter = () => {
-        isPaused = true;
-      };
-
-      handleMouseLeave = () => {
-        isPaused = false;
-      };
-
-      // Add hover listeners to the gallery container
-      gallery.addEventListener('mouseenter', handleMouseEnter);
-      gallery.addEventListener('mouseleave', handleMouseLeave);
-
-      // Start continuous scroll
-      animationId = requestAnimationFrame(smoothScroll);
-    }, 500);
-
-    // This is the real cleanup React actually runs - on dependency change
-    // (e.g. switching the city filter) and on unmount. Stops the animation
-    // frame loop and detaches listeners regardless of whether the initial
-    // setTimeout above has fired yet, and resets any transform it applied.
-    return () => {
-      clearTimeout(timer);
-      if (animationId !== null) {
-        cancelAnimationFrame(animationId);
-      }
-      if (gallery) {
-        gallery.style.transform = '';
-        if (handleMouseEnter) gallery.removeEventListener('mouseenter', handleMouseEnter);
-        if (handleMouseLeave) gallery.removeEventListener('mouseleave', handleMouseLeave);
-      }
-    };
-  }, [isPastSliding, filteredPast.length]);
 
   if (loading) {
     return (
@@ -380,8 +314,8 @@ export default function ProgramsSection() {
 
         {/* City Filter */}
         {(programs.upcoming.length > 0 || programs.past.length > 0) && (
-          <div className="flex justify-center gap-2 mb-8 sm:mb-10 px-4">
-            {(['all', 'TRIVANDRUM', 'KOCHI'] as const).map((c) => (
+          <div className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-10 px-4">
+            {(['all', ...CITY_VALUES] as const).map((c) => (
               <button
                 key={c}
                 onClick={() => setCityFilter(c)}
@@ -441,14 +375,14 @@ export default function ProgramsSection() {
             <div className={`relative mt-4 sm:mt-6 flex items-center ${isPastSliding ? 'h-56 sm:h-64 md:h-80 lg:h-[320px]' : ''}`}>
               <div className={`w-full flex items-center px-2 sm:px-0 ${isPastSliding ? 'h-full overflow-hidden' : 'justify-center'}`}>
                 <div
-                  className={`gallery flex gap-3 sm:gap-4 items-center ${isPastSliding ? 'h-full flex-nowrap' : 'flex-wrap justify-center py-2'}`}
-                  style={{ transition: 'none' }}
+                  className={`flex gap-3 sm:gap-4 items-center ${isPastSliding ? 'sponsor-marquee-track w-max h-full flex-nowrap' : 'flex-wrap justify-center py-2'}`}
+                  style={isPastSliding ? { animationDuration: `${pastScrollDuration}s` } : undefined}
                 >
                   {/* Original images */}
                   {filteredPast.map((program, index) => (
                     <div key={`original-${program.title}-${program.date}-${index}`} className="flex-shrink-0">
                       <a
-                        href={program.linkedin_url}
+                        href={getEventLink(program) || undefined}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block"
@@ -474,7 +408,7 @@ export default function ProgramsSection() {
                   {isPastSliding && filteredPast.map((program, index) => (
                     <div key={`duplicate-${program.title}-${program.date}-${index}`} className="flex-shrink-0">
                       <a
-                        href={program.linkedin_url}
+                        href={getEventLink(program) || undefined}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block"

@@ -64,6 +64,7 @@ model User {
   events           Event[]
   galleryImages    GalleryImage[]
   sponsors         Sponsor[]
+  teamMembers      TeamMember[]
 }
 
 model Partner {
@@ -127,6 +128,8 @@ model Event {
   registrationUrl String?
   isPublished     Boolean   @default(false)
   isFlagship      Boolean   @default(false)
+  // Short badge line for flagship events, e.g. "First ever in Kochi"
+  highlight       String?
   reminderSentAt  DateTime?
   createdById     String?
   createdBy       User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
@@ -157,10 +160,14 @@ model Sponsor {
   logoUrl     String
   path        String
   websiteUrl  String?
+  // null = main-page sponsor; otherwise shown on that city's chapter page
+  city        City?
   createdById String?
   createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
   months      SponsorMonth[]
+
+  @@index([city])
 }
 
 model SponsorMonth {
@@ -173,6 +180,23 @@ model SponsorMonth {
 
   @@unique([sponsorId, month, year])
   @@index([year, month])
+}
+
+model TeamMember {
+  id          String   @id @default(cuid())
+  name        String
+  role        String?
+  imageUrl    String?
+  path        String?
+  linkedinUrl String?
+  city        City
+  order       Int      @default(0)
+  createdById String?
+  createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([city, order])
 }
 
 model ContactForm {
@@ -209,5 +233,6 @@ enum PartnershipStatus {
 enum City {
   TRIVANDRUM
   KOCHI
+  KOZHIKODE
 }
 

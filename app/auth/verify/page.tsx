@@ -20,13 +20,10 @@ export default function VerifyEmail() {
 
     const verifyEmail = async () => {
       try {
-        console.log('Verifying token:', token)
 
         const response = await fetch(`/api/auth/verify?token=${token}`)
-        console.log('Response status:', response.status)
 
         const data = await response.json()
-        console.log('Response data:', data)
 
         if (response.ok) {
           setStatus('success')

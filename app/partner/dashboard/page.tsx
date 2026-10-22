@@ -43,11 +43,9 @@ export default function PartnerDashboard() {
 
       setHasChecked(true)
 
-      console.log('Partner Dashboard: User type:', session.user?.userType) // Debug log
 
       // If user is not a partner, redirect to member dashboard
       if (session.user?.userType !== 'PARTNER') {
-        console.log('Partner Dashboard: Non-partner user, redirecting to member dashboard') // Debug log
         router.push('/dashboard')
         return
       }
@@ -58,18 +56,14 @@ export default function PartnerDashboard() {
           const data = await response.json()
           setPartnerData(data.partner)
           
-          console.log('Partner Dashboard: Partner data fetched:', data.partner) // Debug log
           
           // Check if mandatory fields are completed
           if (!data.partner || !checkMandatoryFields(data.partner)) {
-            console.log('Partner Dashboard: Mandatory fields incomplete, redirecting to profile') // Debug log
             router.push('/partner/complete-profile')
             return
           }
 
-          console.log('Partner Dashboard: All checks passed, showing dashboard') // Debug log
         } else {
-          console.log('Partner Dashboard: API call failed, redirecting to profile completion') // Debug log
           // If no partner profile exists, redirect to form
           router.push('/partner/complete-profile')
           return
@@ -162,7 +156,7 @@ export default function PartnerDashboard() {
             <div className="flex justify-between items-center py-3 sm:py-4">
               <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
                 <Image
-                  src="https://raw.githubusercontent.com/Gourav61/webhr/main/logo.png"
+                  src="/logo.png"
                   alt="HR Evolve Logo"
                   width={40}
                   height={40}

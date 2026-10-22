@@ -9,10 +9,14 @@ interface Sponsor {
   websiteUrl: string | null
 }
 
-export default function SponsorSlider() {
-  const [sponsors, setSponsors] = useState<Sponsor[]>([])
+// Pass `sponsors` when the data is already loaded server-side (chapter pages);
+// otherwise the homepage sponsors are fetched on mount.
+export default function SponsorSlider({ sponsors: initialSponsors }: { sponsors?: Sponsor[] } = {}) {
+  const [sponsors, setSponsors] = useState<Sponsor[]>(initialSponsors || [])
 
   useEffect(() => {
+    if (initialSponsors) return
+
     const loadSponsors = async () => {
       try {
         const res = await fetch('/api/sponsors')
@@ -25,7 +29,7 @@ export default function SponsorSlider() {
     }
 
     loadSponsors()
-  }, [])
+  }, [initialSponsors])
 
   if (sponsors.length === 0) {
     return null
@@ -62,6 +66,7 @@ export default function SponsorSlider() {
                 alt={sponsor.name || 'Sponsor'}
                 className="h-9 sm:h-12 w-auto max-w-[140px] sm:max-w-[180px] object-contain opacity-80 hover:opacity-100 transition-opacity duration-200"
                 loading="lazy"
+                decoding="async"
               />
             )
             return (
