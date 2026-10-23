@@ -1,7 +1,3 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-
 interface Sponsor {
   id: string
   name: string | null
@@ -9,28 +5,9 @@ interface Sponsor {
   websiteUrl: string | null
 }
 
-// Pass `sponsors` when the data is already loaded server-side (chapter pages);
-// otherwise the homepage sponsors are fetched on mount.
-export default function SponsorSlider({ sponsors: initialSponsors }: { sponsors?: Sponsor[] } = {}) {
-  const [sponsors, setSponsors] = useState<Sponsor[]>(initialSponsors || [])
-
-  useEffect(() => {
-    if (initialSponsors) return
-
-    const loadSponsors = async () => {
-      try {
-        const res = await fetch('/api/sponsors')
-        if (!res.ok) return
-        const data = await res.json()
-        setSponsors(data.sponsors || [])
-      } catch {
-        // Silently fail - the slider simply won't render.
-      }
-    }
-
-    loadSponsors()
-  }, [initialSponsors])
-
+// Sponsors are loaded server-side (homepage and chapter pages) and passed in.
+// Renders nothing when there are none.
+export default function SponsorSlider({ sponsors }: { sponsors: Sponsor[] }) {
   if (sponsors.length === 0) {
     return null
   }

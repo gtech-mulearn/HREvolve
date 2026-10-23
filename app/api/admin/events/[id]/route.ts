@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { supabaseAdmin, EVENT_IMAGES_BUCKET } from '@/lib/supabase-admin'
 import { isValidCity } from '@/lib/cities'
+import { revalidatePublicPages } from '@/lib/revalidate'
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const { session, error, status } = await requireAdminSession(['ADMIN', 'HOST'])
@@ -71,6 +72,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     },
   })
 
+  revalidatePublicPages()
   return NextResponse.json({ event })
 }
 
@@ -98,5 +100,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
   }
 
+  revalidatePublicPages()
   return NextResponse.json({ message: 'Event deleted' })
 }

@@ -3,8 +3,6 @@ import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
 import { ThemeProvider } from './theme-provider'
 import SessionProvider from '@/components/SessionProvider'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 
 const roboto = Roboto({ 
   subsets: ['latin'],
@@ -41,12 +39,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions)
 
   return (
     <html lang="en">
@@ -71,7 +68,7 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${roboto.className} bg-primary text-primary transition-colors duration-300 ease-out m-0 p-0 leading-relaxed`}>
-        <SessionProvider session={session}>
+        <SessionProvider>
           <ThemeProvider>
             {children}
           </ThemeProvider>

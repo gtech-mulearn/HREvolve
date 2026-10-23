@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { isValidCity } from '@/lib/cities'
 import { uploadTeamPhoto, removeTeamPhoto, isValidLinkedinUrl } from '@/lib/team'
+import { revalidatePublicPages } from '@/lib/revalidate'
 
 // Accepts multipart form data so the photo can be replaced in the same request.
 // Only fields present in the form are updated.
@@ -69,6 +70,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     await removeTeamPhoto(existing.path)
   }
 
+  revalidatePublicPages()
   return NextResponse.json({ member })
 }
 
@@ -86,5 +88,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   await prisma.teamMember.delete({ where: { id: params.id } })
   await removeTeamPhoto(existing.path)
 
+  revalidatePublicPages()
   return NextResponse.json({ message: 'Team member deleted' })
 }

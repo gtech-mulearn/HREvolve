@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import { CITIES, getCityBySlug } from '@/lib/cities'
+import { CITIES, getCityBySlug, type CityValue } from '@/lib/cities'
 import { ELEVATE_CURRENT } from '@/lib/elevate'
 import { getCurrentMonthSponsors } from '@/lib/sponsors'
 import { convertGoogleDriveUrl, formatDate } from '@/app/utils/sheetsApi'
@@ -11,7 +11,14 @@ import { LinkedinIcon } from '@/components/icons'
 import SponsorSlider from '@/app/components/SponsorSlider'
 import { getAvatarColor, getUserInitials } from '@/lib/avatar-utils'
 
-export const dynamic = 'force-dynamic'
+// Statically generated for each city; refreshed every minute and on admin changes
+// (revalidatePublicPages). Unknown slugs 404.
+export const revalidate = 60
+export const dynamicParams = false
+
+export function generateStaticParams() {
+  return CITIES.map((c) => ({ city: c.slug }))
+}
 
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000
 
@@ -45,34 +52,46 @@ export function generateMetadata({ params }: { params: { city: string } }): Meta
   }
 }
 
-export default async function ChapterPage({ params }: { params: { city: string } }) {
-  const city = getCityBySlug(params.city)
-  if (!city) notFound()
-
-  const today = todayAsUtcMidnightIst()
-
-  const [team, upcoming, past, pastElevate, sponsors] = await Promise.all([
+function loadChapterData(cityValue: CityValue, today: Date) {
+  return Promise.all([
     prisma.teamMember.findMany({
-      where: { city: city.value },
+      where: { city: cityValue },
       orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
     }),
     prisma.event.findMany({
-      where: { city: city.value, isPublished: true, date: { gte: today } },
+      where: { city: cityValue, isPublished: true, date: { gte: today } },
       orderBy: { date: 'asc' },
     }),
     prisma.event.findMany({
-      where: { city: city.value, isPublished: true, isFlagship: false, date: { lt: today } },
+      where: { city: cityValue, isPublished: true, isFlagship: false, date: { lt: today } },
       orderBy: { date: 'desc' },
       take: 8,
     }),
     // Every past Elevate edition in this city, shown separately so they never get
     // pushed out by the most-recent-8 cap on monthly sessions.
     prisma.event.findMany({
-      where: { city: city.value, isPublished: true, isFlagship: true, date: { lt: today } },
+      where: { city: cityValue, isPublished: true, isFlagship: true, date: { lt: today } },
       orderBy: { date: 'desc' },
     }),
-    getCurrentMonthSponsors(city.value),
+    getCurrentMonthSponsors(cityValue),
   ])
+}
+
+type ChapterData = Awaited<ReturnType<typeof loadChapterData>>
+
+export default async function ChapterPage({ params }: { params: { city: string } }) {
+  const city = getCityBySlug(params.city)
+  if (!city) notFound()
+
+  const today = todayAsUtcMidnightIst()
+
+  let data: ChapterData = [[], [], [], [], []]
+  try {
+    data = await loadChapterData(city.value, today)
+  } catch (error) {
+    console.error(`Failed to load chapter data for ${city.slug}:`, error)
+  }
+  const [team, upcoming, past, pastElevate, sponsors] = data
 
   const hostsElevate = ELEVATE_CURRENT.city === city.value
   const otherCities = CITIES.filter((c) => c.value !== city.value)

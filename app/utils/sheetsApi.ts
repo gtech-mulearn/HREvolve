@@ -1,4 +1,5 @@
-// Events data utility functions - reads published events from the CMS-backed /api/events route
+// Events data utility functions - shared by server pages (via lib/public-data.ts) and
+// client components that read the CMS-backed /api/events route
 export interface ProgramData {
   title: string;
   date: string;
@@ -21,7 +22,7 @@ export interface ProcessedPrograms {
   past: ProgramData[];
 }
 
-interface ApiEvent {
+export interface ApiEvent {
   id: string;
   title: string;
   description: string | null;
@@ -71,7 +72,12 @@ async function loadPublishedEvents(): Promise<ProcessedPrograms> {
   }
 
   const { events }: { events: ApiEvent[] } = await response.json();
+  return processEvents(events);
+}
 
+// Maps raw events (from /api/events, or straight from Prisma on the server) to
+// display data, split into upcoming/past by IST calendar day.
+export function processEvents(events: ApiEvent[]): ProcessedPrograms {
   const today = todayIst();
 
   const upcoming: ProgramData[] = [];

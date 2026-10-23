@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { isValidCity } from '@/lib/cities'
 import { uploadTeamPhoto, isValidLinkedinUrl } from '@/lib/team'
+import { revalidatePublicPages } from '@/lib/revalidate'
 
 export async function GET(request: NextRequest) {
   const { session, error, status } = await requireAdminSession(['ADMIN'])
@@ -74,5 +75,6 @@ export async function POST(request: NextRequest) {
     },
   })
 
+  revalidatePublicPages()
   return NextResponse.json({ member }, { status: 201 })
 }

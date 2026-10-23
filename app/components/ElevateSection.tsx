@@ -1,10 +1,7 @@
-'use client'
-
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ELEVATE_CURRENT } from '@/lib/elevate'
 import { CITY_LABELS } from '@/lib/cities'
-import { fetchPublishedEvents, getEventLink, type ProgramData } from '../utils/sheetsApi'
+import { getEventLink, type ProgramData, type ProcessedPrograms } from '../utils/sheetsApi'
 
 interface Edition {
   key: string
@@ -50,14 +47,8 @@ function buildEditions(upcoming: ProgramData[], past: ProgramData[]): Edition[] 
   return editions
 }
 
-export default function ElevateSection() {
-  const [editions, setEditions] = useState<Edition[]>([])
-
-  useEffect(() => {
-    fetchPublishedEvents()
-      .then(({ upcoming, past }) => setEditions(buildEditions(upcoming, past)))
-      .catch(() => setEditions(buildEditions([], [])))
-  }, [])
+export default function ElevateSection({ programs }: { programs: ProcessedPrograms }) {
+  const editions = buildEditions(programs.upcoming, programs.past)
 
   return (
     <section className="py-16 sm:py-20 px-4 sm:px-6 md:px-8 lg:px-12 bg-primary transition-colors duration-300">

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { supabaseAdmin, GALLERY_IMAGES_BUCKET, ensureGalleryImagesBucket } from '@/lib/supabase-admin'
 import { optimizeImage, buildStoragePath } from '@/lib/image-optimize'
+import { revalidatePublicPages } from '@/lib/revalidate'
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024
 
@@ -92,5 +93,6 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  if (created.length > 0) revalidatePublicPages()
   return NextResponse.json({ created, failed }, { status: created.length > 0 ? 201 : 400 })
 }

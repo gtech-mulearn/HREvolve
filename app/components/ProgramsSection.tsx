@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTheme } from '../theme-provider';
-import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS, getEventLink } from '../utils/sheetsApi';
+import { ProgramData, type ProcessedPrograms, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS, getEventLink } from '../utils/sheetsApi';
 import { CITY_VALUES, type CityValue } from '@/lib/cities'
 
 interface ProgramCardProps {
@@ -54,8 +53,6 @@ function PastEventImage({ program, className, width, height }: PastEventImagePro
 
 function ProgramCard({ program, isPast = false }: ProgramCardProps) {
   const isComingSoon = !isPast && isEventSoon(program.date);
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   
   // Get multiple URL formats for Google Drive images
   const imageUrls = program.image_url ? getGoogleDriveUrls(program.image_url) : [getFallbackImageUrl()];
@@ -156,14 +153,16 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
               onClick={(e) => e.stopPropagation()}
               className="block px-4 py-2.5 rounded-lg text-center text-sm font-medium transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
               style={{
-                backgroundColor: isDark ? '#ffffff' : '#000000',
-                color: isDark ? '#000000' : '#ffffff',
+                // Theme colours via CSS variables (not useTheme) so the server-rendered
+                // markup matches on hydration in dark mode
+                backgroundColor: 'var(--accent-color)',
+                color: 'var(--bg-primary)',
                 border: 'none',
                 textDecoration: 'none',
-                WebkitTextFillColor: isDark ? '#000000' : '#ffffff',
+                WebkitTextFillColor: 'var(--bg-primary)',
               }}
             >
-              <span style={{ color: isDark ? '#000000' : '#ffffff' }}>
+              <span style={{ color: 'var(--bg-primary)' }}>
                 Register
               </span>
             </a>
@@ -174,13 +173,9 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
   );
 }
 
-export default function ProgramsSection() {
-  const [programs, setPrograms] = useState<{ upcoming: ProgramData[]; past: ProgramData[] }>({
-    upcoming: [], 
-    past: [] 
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+// Events are loaded on the server (app/page.tsx) and passed in, so they're in the
+// initial HTML; only the city filter runs client-side.
+export default function ProgramsSection({ programs }: { programs: ProcessedPrograms }) {
   const [cityFilter, setCityFilter] = useState<'all' | CityValue>('all');
 
   const filterByCity = (list: ProgramData[]) =>
@@ -193,27 +188,6 @@ export default function ProgramsSection() {
   const filteredPast = allFilteredPast.slice(0, PAST_STRIP_LIMIT);
   const hasMorePast = allFilteredPast.length > PAST_STRIP_LIMIT;
 
-  const loadPrograms = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await fetchPublishedEvents();
-      setPrograms(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error loading programs:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load programs. Please try again later.';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadPrograms();
-  }, []);
-
   // Continuous auto-scroll carousel for past events - only worth sliding
   // once there are enough events that they wouldn't all fit statically
   // Animated with the shared CSS marquee (globals.css) - the track holds the list twice,
@@ -221,95 +195,6 @@ export default function ProgramsSection() {
   const isPastSliding = filteredPast.length > 4;
   const pastScrollDuration = filteredPast.length * 15;
 
-
-  if (loading) {
-    return (
-      <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 md:px-8 lg:px-12 bg-primary transition-colors duration-300">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header Skeleton */}
-          <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <div className="h-8 sm:h-10 bg-primary/10 rounded-lg w-64 sm:w-96 mx-auto mb-4 animate-pulse"></div>
-            <div className="h-5 sm:h-6 bg-primary/10 rounded-lg w-full max-w-2xl mx-auto animate-pulse"></div>
-          </div>
-
-          {/* Upcoming Events Skeleton */}
-          <div className="mb-16">
-            <div className="h-8 bg-primary/10 rounded-lg w-48 mb-8 animate-pulse"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-primary/5 rounded-xl border border-custom/20 p-4 sm:p-6 animate-pulse">
-                  <div className="h-40 sm:h-48 bg-primary/10 rounded-lg mb-4"></div>
-                  <div className="h-5 sm:h-6 bg-primary/10 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-primary/10 rounded w-1/2 mb-4"></div>
-                  <div className="h-3 sm:h-4 bg-primary/10 rounded w-full mb-2"></div>
-                  <div className="h-3 sm:h-4 bg-primary/10 rounded w-2/3 mb-4"></div>
-                  <div className="h-9 sm:h-10 bg-primary/10 rounded-lg w-full"></div>
-                </div>
-              ))}
-            </div>
-            <div className="text-center mt-6">
-              <div className="inline-flex items-center gap-2 text-secondary">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                <span>Loading upcoming events...</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Past Events Skeleton */}
-          <div>
-            <div className="h-8 bg-primary/10 rounded-lg w-48 mb-8 animate-pulse"></div>
-            <div className="relative overflow-hidden bg-primary/5 rounded-xl p-8">
-              <div className="flex gap-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex-shrink-0 w-64 h-40 bg-primary/10 rounded-lg animate-pulse"></div>
-                ))}
-              </div>
-              <div className="text-center mt-6">
-                <div className="inline-flex items-center gap-2 text-secondary">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                  <span>Loading past events...</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="py-16 px-4 bg-primary transition-colors duration-300">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-primary mb-4">
-              HR Programs & Events
-            </h2>
-            <p className="text-secondary text-lg max-w-2xl mx-auto">
-              Join our community events, workshops, and conferences designed to elevate HR professionals
-            </p>
-          </div>
-          
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-8 text-center max-w-2xl mx-auto">
-            <div className="text-red-500 text-4xl mb-4">⚠️</div>
-            <h3 className="text-xl font-semibold text-red-700 dark:text-red-400 mb-2">
-              Unable to Load Events
-            </h3>
-            <p className="text-red-600 dark:text-red-300 mb-6">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-            >
-              Try Again
-            </button>
-            <p className="text-sm text-red-500 dark:text-red-400 mt-4">
-              If the problem persists, please check your internet connection or contact support.
-            </p>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section id="programs" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 md:px-8 lg:px-12 bg-primary transition-colors duration-300">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
+import { revalidatePublicPages } from '@/lib/revalidate'
 
 export async function POST(request: NextRequest) {
   const { session, error, status } = await requireAdminSession(['ADMIN'])
@@ -32,5 +33,6 @@ export async function POST(request: NextRequest) {
       .catch(() => {})
   }
 
+  revalidatePublicPages()
   return NextResponse.json({ message: 'Updated' })
 }

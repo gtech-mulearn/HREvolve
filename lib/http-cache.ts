@@ -1,6 +1,7 @@
-// Cache headers for public read-only APIs. Vercel's edge serves the cached response for
-// 60s and refreshes it in the background for up to 5 min, so admin edits (publishing an
-// event, assigning a sponsor) can take up to about a minute to appear publicly.
+// Cache headers for public read-only APIs. The public pages now get their data
+// server-side (ISR, purged instantly by revalidatePublicPages() on admin edits), so
+// these APIs are only a client-side fallback. revalidatePath can't purge CDN-cached
+// API responses, so keep the window short: at most ~1 minute of staleness.
 export const PUBLIC_CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+  'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=30',
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { supabaseAdmin, GALLERY_IMAGES_BUCKET } from '@/lib/supabase-admin'
+import { revalidatePublicPages } from '@/lib/revalidate'
 
 export async function POST(request: NextRequest) {
   const { session, error, status } = await requireAdminSession(['ADMIN'])
@@ -21,6 +22,7 @@ export async function POST(request: NextRequest) {
       where: { id: { in: ids } },
       data: { isPublished: true },
     })
+    revalidatePublicPages()
     return NextResponse.json({ updated: result.count })
   }
 
@@ -37,6 +39,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    revalidatePublicPages()
     return NextResponse.json({ deleted: images.length })
   }
 

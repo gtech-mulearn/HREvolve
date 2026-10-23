@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { supabaseAdmin, SPONSOR_LOGOS_BUCKET } from '@/lib/supabase-admin'
+import { revalidatePublicPages } from '@/lib/revalidate'
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   const { session, error, status } = await requireAdminSession(['ADMIN'])
@@ -25,6 +26,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     },
   })
 
+  revalidatePublicPages()
   return NextResponse.json({ sponsor })
 }
 
@@ -47,5 +49,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     console.error('Failed to clean up sponsor logo from storage:', cleanupError)
   }
 
+  revalidatePublicPages()
   return NextResponse.json({ message: 'Sponsor deleted' })
 }

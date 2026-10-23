@@ -5,6 +5,7 @@ import { requireAdminSession } from '@/lib/admin-auth'
 import { isValidCity } from '@/lib/cities'
 import { supabaseAdmin, SPONSOR_LOGOS_BUCKET, ensureSponsorLogosBucket } from '@/lib/supabase-admin'
 import { optimizeImage, buildStoragePath } from '@/lib/image-optimize'
+import { revalidatePublicPages } from '@/lib/revalidate'
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024
 
@@ -103,5 +104,6 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  if (created.length > 0) revalidatePublicPages()
   return NextResponse.json({ created, failed }, { status: created.length > 0 ? 201 : 400 })
 }
