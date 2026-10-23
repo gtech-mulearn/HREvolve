@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'crypto'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { supabaseAdmin, EVENT_IMAGES_BUCKET, ensureEventImagesBucket } from '@/lib/supabase-admin'
+import { optimizeImage, buildStoragePath } from '@/lib/image-optimize'
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024
 
@@ -29,13 +30,13 @@ export async function POST(request: NextRequest) {
   try {
     await ensureEventImagesBucket()
 
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')
-    const path = `events/${randomUUID()}-${sanitizedName}`
-    const buffer = Buffer.from(await file.arrayBuffer())
+    const optimized = await optimizeImage(Buffer.from(await file.arrayBuffer()), file.type, 'event')
+    const path = buildStoragePath('events', randomUUID(), file.name, optimized.ext)
+    const buffer = optimized.buffer
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from(EVENT_IMAGES_BUCKET)
-      .upload(path, buffer, { contentType: file.type })
+      .upload(path, buffer, { contentType: optimized.contentType })
 
     if (uploadError) {
       throw uploadError

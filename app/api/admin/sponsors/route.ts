@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { isValidCity } from '@/lib/cities'
 import { supabaseAdmin, SPONSOR_LOGOS_BUCKET, ensureSponsorLogosBucket } from '@/lib/supabase-admin'
+import { optimizeImage, buildStoragePath } from '@/lib/image-optimize'
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024
 
@@ -68,13 +69,13 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      const sanitizedName = entry.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')
-      const path = `sponsors/${randomUUID()}-${sanitizedName}`
-      const buffer = Buffer.from(await entry.arrayBuffer())
+      const optimized = await optimizeImage(Buffer.from(await entry.arrayBuffer()), entry.type, 'logo')
+      const path = buildStoragePath('sponsors', randomUUID(), entry.name, optimized.ext)
+      const buffer = optimized.buffer
 
       const { error: uploadError } = await supabaseAdmin.storage
         .from(SPONSOR_LOGOS_BUCKET)
-        .upload(path, buffer, { contentType: entry.type })
+        .upload(path, buffer, { contentType: optimized.contentType })
 
       if (uploadError) throw uploadError
 

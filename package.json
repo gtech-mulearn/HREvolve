@@ -15,7 +15,8 @@
     "prisma:studio": "prisma studio",
     "prisma:migrate": "prisma migrate dev",
     "migrate:events": "node scripts/migrate-events-from-sheet.js",
-    "create:bootstrap-admin": "node scripts/create-bootstrap-admin.js"
+    "create:bootstrap-admin": "node scripts/create-bootstrap-admin.js",
+    "optimize:images": "node scripts/optimize-existing-images.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
@@ -29,7 +30,8 @@
     "nodemailer": "^6.10.1",
     "prisma": "^6.16.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

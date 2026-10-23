@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTheme } from '../theme-provider';
 import { fetchPublishedEvents, ProgramData, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS, getEventLink } from '../utils/sheetsApi';
 import { CITY_VALUES, type CityValue } from '@/lib/cities'
@@ -17,6 +18,8 @@ interface PastEventImageProps {
   width: number;
   height: number;
 }
+
+const PAST_STRIP_LIMIT = 12;
 
 function PastEventImage({ program, className, width, height }: PastEventImageProps) {
   // Get multiple URL formats for Google Drive images
@@ -41,6 +44,9 @@ function PastEventImage({ program, className, width, height }: PastEventImagePro
       className={className}
       width={width}
       height={height}
+      sizes="250px"
+      loading="lazy"
+      decoding="async"
       onError={handleImageError}
     />
   );
@@ -85,6 +91,8 @@ function ProgramCard({ program, isPast = false }: ProgramCardProps) {
             fill
             className="object-cover keep-colors transition-transform duration-300 hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            loading="lazy"
+            decoding="async"
             onError={handleImageError}
           />
         ) : (
@@ -179,7 +187,11 @@ export default function ProgramsSection() {
     cityFilter === 'all' ? list : list.filter((program) => program.city === cityFilter);
 
   const filteredUpcoming = filterByCity(programs.upcoming);
-  const filteredPast = filterByCity(programs.past);
+  const allFilteredPast = filterByCity(programs.past);
+  // The homepage strip only shows the most recent past events (past is sorted
+  // newest-first); the full archive lives on /events.
+  const filteredPast = allFilteredPast.slice(0, PAST_STRIP_LIMIT);
+  const hasMorePast = allFilteredPast.length > PAST_STRIP_LIMIT;
 
   const loadPrograms = async () => {
     try {
@@ -433,6 +445,13 @@ export default function ProgramsSection() {
                 </div>
               </div>
             </div>
+            {hasMorePast && (
+              <div className="text-center mt-6 sm:mt-8">
+                <Link href="/events" className="text-sm sm:text-base font-semibold text-primary hover:opacity-70 transition-opacity">
+                  See all past events →
+                </Link>
+              </div>
+            )}
           </div>
         )}
 

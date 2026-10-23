@@ -1,81 +1,32 @@
 import { withAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
 
-export default withAuth(
-  async function middleware(req) {
-    // Allow access to auth routes, API routes, and home page
-    if (req.nextUrl.pathname.startsWith('/auth') ||
-        req.nextUrl.pathname.startsWith('/api') ||
-        req.nextUrl.pathname === '/' ||
-        req.nextUrl.pathname.startsWith('/events') ||
-        req.nextUrl.pathname.startsWith('/gallery') ||
-        req.nextUrl.pathname.startsWith('/chapters')) {
-      return NextResponse.next()
-    }
-    
-    // For authenticated users, we'll rely on client-side validation
-    // since Prisma doesn't work on Edge Runtime in middleware
-    
-    // Allow access to profile completion routes
-    if (req.nextUrl.pathname.startsWith('/member/complete-profile') ||
-        req.nextUrl.pathname.startsWith('/partner/complete-profile')) {
-      return NextResponse.next()
-    }
-    
-    // Allow access to dashboard routes - client-side validation will handle redirects
-    if (req.nextUrl.pathname === '/dashboard' ||
-        req.nextUrl.pathname.startsWith('/partner/dashboard')) {
-      return NextResponse.next()
-    }
-
-    // /admin requires auth (enforced by the `authorized` callback below, since it's
-    // not in the public allowlist). The actual role check (ADMIN/HOST) is done in
-    // app/admin/layout.tsx via getServerSession, not here - the JWT's `role` claim
-    // only refreshes on login, so gating on it at the edge would keep a user who was
-    // just promoted via /admin/users locked out until they sign out and back in.
-
-    // For other protected routes, continue
-    return NextResponse.next()
+// Only runs for the signed-in areas listed in `config.matcher` - public pages and
+// public APIs never hit the middleware. All matched routes just need a valid session.
+//
+// The actual role check (ADMIN/HOST) for /admin is done in app/admin/layout.tsx via
+// getServerSession, not here - the JWT's `role` claim only refreshes on login, so
+// gating on it at the edge would keep a user who was just promoted via /admin/users
+// locked out until they sign out and back in. Admin API routes check roles
+// themselves via requireAdminSession.
+//
+// Dashboard and profile-completion redirects (member vs partner, incomplete profile)
+// are handled client-side, since Prisma doesn't run on the Edge Runtime.
+export default withAuth({
+  callbacks: {
+    authorized: ({ token }) => !!token,
   },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        // Allow unauthenticated access to public pages
-        if (req.nextUrl.pathname === '/' ||
-            req.nextUrl.pathname.startsWith('/auth') ||
-            req.nextUrl.pathname.startsWith('/events') ||
-            req.nextUrl.pathname.startsWith('/gallery') ||
-            req.nextUrl.pathname.startsWith('/chapters') ||
-            req.nextUrl.pathname.startsWith('/api/auth') ||
-            req.nextUrl.pathname.startsWith('/api/events') ||
-            req.nextUrl.pathname.startsWith('/api/gallery') ||
-            req.nextUrl.pathname.startsWith('/api/sponsors') ||
-            req.nextUrl.pathname.startsWith('/api/cron')) {
-          return true
-        }
-        
-        // Allow access to profile completion pages for authenticated users
-        if ((req.nextUrl.pathname.startsWith('/member/complete-profile') ||
-             req.nextUrl.pathname.startsWith('/partner/complete-profile')) && token) {
-          return true
-        }
-        
-        // Require authentication for protected routes
-        return !!token
-      },
-    },
-  }
-)
+})
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public|.*\\.).*)',
+    '/admin',
+    '/admin/:path*',
+    '/dashboard',
+    '/dashboard/:path*',
+    '/member/:path*',
+    '/partner/:path*',
+    '/api/admin/:path*',
+    '/api/member/:path*',
+    '/api/partner/:path*',
   ],
 }

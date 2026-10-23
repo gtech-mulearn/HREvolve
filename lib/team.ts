@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 import { supabaseAdmin, TEAM_PHOTOS_BUCKET, ensureTeamPhotosBucket } from '@/lib/supabase-admin'
+import { optimizeImage, buildStoragePath } from '@/lib/image-optimize'
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024
 
@@ -15,13 +16,13 @@ export async function uploadTeamPhoto(file: File) {
 
   await ensureTeamPhotosBucket()
 
-  const sanitizedName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')
-  const path = `team/${randomUUID()}-${sanitizedName}`
-  const buffer = Buffer.from(await file.arrayBuffer())
+  const optimized = await optimizeImage(Buffer.from(await file.arrayBuffer()), file.type, 'portrait')
+  const path = buildStoragePath('team', randomUUID(), file.name, optimized.ext)
+  const buffer = optimized.buffer
 
   const { error: uploadError } = await supabaseAdmin.storage
     .from(TEAM_PHOTOS_BUCKET)
-    .upload(path, buffer, { contentType: file.type })
+    .upload(path, buffer, { contentType: optimized.contentType })
 
   if (uploadError) throw uploadError
 

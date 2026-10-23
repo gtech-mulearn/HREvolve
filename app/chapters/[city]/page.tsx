@@ -25,9 +25,23 @@ function todayAsUtcMidnightIst() {
 export function generateMetadata({ params }: { params: { city: string } }): Metadata {
   const city = getCityBySlug(params.city)
   if (!city) return {}
+  const title = `${city.label} Chapter`
+  const description = `Meet the HR Evolve ${city.label} core team, see upcoming events and our chapter sponsors.`
   return {
-    title: `${city.label} Chapter | HR Evolve`,
-    description: `Meet the HR Evolve ${city.label} core team, see upcoming events and our chapter sponsors.`,
+    title,
+    description,
+    openGraph: {
+      title: `HR Evolve ${city.label} Chapter`,
+      description,
+      url: `/chapters/${city.slug}`,
+      images: [{ url: city.image, alt: `HR Evolve ${city.label}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `HR Evolve ${city.label} Chapter`,
+      description,
+      images: [city.image],
+    },
   }
 }
 

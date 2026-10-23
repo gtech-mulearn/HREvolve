@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { supabaseAdmin, GALLERY_IMAGES_BUCKET, ensureGalleryImagesBucket } from '@/lib/supabase-admin'
+import { optimizeImage, buildStoragePath } from '@/lib/image-optimize'
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024
 
@@ -63,13 +64,13 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      const sanitizedName = entry.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')
-      const path = `gallery/${randomUUID()}-${sanitizedName}`
-      const buffer = Buffer.from(await entry.arrayBuffer())
+      const optimized = await optimizeImage(Buffer.from(await entry.arrayBuffer()), entry.type, 'photo')
+      const path = buildStoragePath('gallery', randomUUID(), entry.name, optimized.ext)
+      const buffer = optimized.buffer
 
       const { error: uploadError } = await supabaseAdmin.storage
         .from(GALLERY_IMAGES_BUCKET)
-        .upload(path, buffer, { contentType: entry.type })
+        .upload(path, buffer, { contentType: optimized.contentType })
 
       if (uploadError) throw uploadError
 
