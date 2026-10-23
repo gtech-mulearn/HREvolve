@@ -7,6 +7,7 @@ import { ELEVATE_CURRENT } from '@/lib/elevate'
 import { getCurrentMonthSponsors } from '@/lib/sponsors'
 import { convertGoogleDriveUrl, formatDate } from '@/app/utils/sheetsApi'
 import SiteHeader from '@/components/SiteHeader'
+import ElevateUpcomingCard from '@/components/ElevateUpcomingCard'
 import { LinkedinIcon } from '@/components/icons'
 import SponsorSlider from '@/app/components/SponsorSlider'
 import { getAvatarColor, getUserInitials } from '@/lib/avatar-utils'
@@ -94,6 +95,8 @@ export default async function ChapterPage({ params }: { params: { city: string }
   const [team, upcoming, past, pastElevate, sponsors] = data
 
   const hostsElevate = ELEVATE_CURRENT.city === city.value
+  // Featured until the edition is added as a dated event (see lib/elevate.ts)
+  const showElevateCard = hostsElevate && !upcoming.some((e) => e.isFlagship)
   const otherCities = CITIES.filter((c) => c.value !== city.value)
 
   return (
@@ -204,10 +207,18 @@ export default async function ChapterPage({ params }: { params: { city: string }
             </Link>
           </div>
 
+          {showElevateCard && (
+            <div className="mb-8">
+              <ElevateUpcomingCard />
+            </div>
+          )}
+
           {upcoming.length === 0 ? (
+            showElevateCard ? null : (
             <div className="rounded-2xl border border-custom bg-primary p-8 text-center mb-12">
               <p className="text-secondary">No upcoming events right now - check back soon!</p>
             </div>
+            )
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {upcoming.map((event) => (

@@ -68,7 +68,7 @@ export default async function Home() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-7 sm:px-9 py-3.5 sm:py-4 rounded-xl text-base sm:text-lg font-bold bg-gradient-to-r from-amber-400 to-orange-500 !text-black no-underline shadow-2xl transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-orange-500/40"
             >
-              Get your pass for {ELEVATE_CURRENT.name} →
+              Explore {ELEVATE_CURRENT.name} →
             </a>
             <a
               href="#about"

@@ -7,6 +7,8 @@ import SiteHeader from '@/components/SiteHeader'
 import { useTheme } from '../theme-provider'
 import { ProgramData, type ProcessedPrograms, formatDate, isEventSoon, getFallbackImageUrl, getGoogleDriveUrls, CITY_LABELS, getEventLink } from '../utils/sheetsApi'
 import { CITY_VALUES, type CityValue } from '@/lib/cities'
+import { ELEVATE_CURRENT } from '@/lib/elevate'
+import ElevateUpcomingCard from '@/components/ElevateUpcomingCard'
 
 interface ProgramCardProps {
   program: ProgramData;
@@ -159,6 +161,13 @@ export default function EventsView({ programs }: { programs: ProcessedPrograms }
     past: programs.past.filter((program) => program.is_flagship === (programType === 'flagship')),
   };
 
+  // The current Elevate edition shows as a featured card until it's added as a dated event
+  const showElevateCard =
+    programType === 'flagship' &&
+    (cityFilter === 'all' || cityFilter === ELEVATE_CURRENT.city) &&
+    !programs.upcoming.some((p) => p.is_flagship && p.city === ELEVATE_CURRENT.city);
+  const upcomingCount = filterByCity(typeFiltered.upcoming).length + (showElevateCard ? 1 : 0);
+
   useEffect(() => {
     // Deep link from the homepage Elevate section: /events?type=flagship
     const params = new URLSearchParams(window.location.search);
@@ -249,7 +258,7 @@ export default function EventsView({ programs }: { programs: ProcessedPrograms }
                 : { color: 'var(--text-secondary)' }
               }
             >
-              Upcoming Events ({filterByCity(typeFiltered.upcoming).length})
+              Upcoming Events ({upcomingCount})
             </button>
             <button
               onClick={() => setActiveTab('past')}
@@ -291,6 +300,11 @@ export default function EventsView({ programs }: { programs: ProcessedPrograms }
         {/* Events Grid */}
         {activeTab === 'upcoming' && (
           <div>
+            {showElevateCard && (
+              <div className="max-w-5xl mx-auto mb-8 sm:mb-10">
+                <ElevateUpcomingCard />
+              </div>
+            )}
             {filterByCity(typeFiltered.upcoming).length > 0 ? (
               <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
                 {filterByCity(typeFiltered.upcoming).map((program, index) => (
@@ -302,7 +316,7 @@ export default function EventsView({ programs }: { programs: ProcessedPrograms }
                   </div>
                 ))}
               </div>
-            ) : (
+            ) : showElevateCard ? null : (
               <div className="text-center py-12 sm:py-16">
                 <div className="text-4xl sm:text-6xl mb-4">📅</div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No Upcoming Events</h3>

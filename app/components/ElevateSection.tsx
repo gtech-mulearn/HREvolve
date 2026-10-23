@@ -38,7 +38,7 @@ function buildEditions(upcoming: ProgramData[], past: ProgramData[]): Edition[] 
       year: `20${ELEVATE_CURRENT.name.match(/'(\d{2})/)?.[1] ?? ''}`,
       city: CITY_LABELS[ELEVATE_CURRENT.city],
       title: `${ELEVATE_CURRENT.name} · ${ELEVATE_CURRENT.edition}`,
-      line: 'Next up - passes open',
+      line: `Next up · ${ELEVATE_CURRENT.status}`,
       link: ELEVATE_CURRENT.url,
       isNext: true,
     })
@@ -74,6 +74,11 @@ export default function ElevateSection({ programs }: { programs: ProcessedProgra
               {editions.map((edition) => {
                 const content = (
                   <>
+                    {edition.isNext && (
+                      <span aria-hidden="true" className="elevate-sparkle absolute top-2 right-3 text-lg !text-amber-300">
+                        ✦
+                      </span>
+                    )}
                     <span className={`block text-3xl sm:text-4xl font-extrabold ${edition.isNext ? 'bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent' : '!text-white'}`}>
                       {edition.year}
                     </span>
@@ -81,7 +86,7 @@ export default function ElevateSection({ programs }: { programs: ProcessedProgra
                     {edition.line && <span className="block text-xs !text-white/70 mt-1">{edition.line}</span>}
                   </>
                 )
-                const className = `block h-full rounded-2xl p-4 sm:p-5 border transition-colors ${
+                const className = `relative block h-full rounded-2xl p-4 sm:p-5 border transition-colors ${
                   edition.isNext ? 'border-amber-400/70 bg-amber-400/10' : 'border-white/15 bg-white/5'
                 }`
                 return (
@@ -108,7 +113,7 @@ export default function ElevateSection({ programs }: { programs: ProcessedProgra
               rel="noopener noreferrer"
               className="px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 !text-black transition-transform hover:-translate-y-0.5"
             >
-              Get your {ELEVATE_CURRENT.name} pass →
+              Explore {ELEVATE_CURRENT.name} →
             </a>
             <Link
               href="/events?type=flagship"
